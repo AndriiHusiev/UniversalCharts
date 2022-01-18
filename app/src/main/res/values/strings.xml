@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Universal Charts</string>
+
+    <!-- Strings used in SelectionActivity -->
+    <string name="fab_desc">Add new chart</string>
+    <string name="alert_dialog_choose_chart_name">"Enter new chart's title"</string>
+    <string name="alert_dialog_button_ok">OK</string>
+    <string name="alert_dialog_button_cancel">Cancel</string>
+    <string name="action_settings">Settings</string>
+</resources>
