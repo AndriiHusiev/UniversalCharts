@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_chart_detail_info"
+    android:background="#00444444"
+    android:paddingTop="@dimen/fragment_child_side4"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/aga_horizontal_margin16">
+
+    <ImageView
+        android:id="@+id/imageChartEmblem"
+        android:layout_width="62.0dp"
+        android:layout_height="62.0dp"
+        android:layout_marginTop="@dimen/fragment_child_side4"
+        android:layout_marginBottom="@dimen/fragment_child_side8"
+        android:src="@drawable/baseline_insert_chart_black_48"
+        android:contentDescription="@string/chart_emblem" />
+
+    <TextView
+        android:id="@+id/textChartTitle"
+        android:textSize="@dimen/text_size_extra_big"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="62.0dip"
+        android:text="@string/chart_title"
+        android:maxLines="1"
+        android:layout_marginStart="@dimen/fragment_child_side12"
+        android:layout_toEndOf="@id/imageChartEmblem" />
+
+    <View
+        android:id="@+id/view_under01"
+        android:background="@color/colorLightGray2"
+        android:layout_marginTop="6.0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/fragment_child_side12"
+        android:layout_toEndOf="@id/imageChartEmblem"
+        android:layout_alignParentEnd="true"
+        style="@style/Underliner" />
+</RelativeLayout>

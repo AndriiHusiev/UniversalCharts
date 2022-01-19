@@ -1,3 +1,12 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fragment_child_side2">2.0dp</dimen>
+    <dimen name="fragment_child_side4">4.0dp</dimen>
+    <dimen name="fragment_child_side8">8.0dp</dimen>
+    <dimen name="fragment_child_side12">12.0dp</dimen>
+    <dimen name="aga_horizontal_margin16">16.0dp</dimen>
+    <dimen name="text_size_extra_big">24.0sp</dimen>
+    <dimen name="text_size_big">20.0sp</dimen>
+    <dimen name="text_size_medium">16.0sp</dimen>
+    <dimen name="text_size_small">12.0sp</dimen>
 </resources>

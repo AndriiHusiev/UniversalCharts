@@ -2,10 +2,7 @@ package com.husiev.universalcharts
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.husiev.universalcharts.databinding.ActivityMainBinding
 import com.husiev.universalcharts.utils.*
@@ -33,28 +30,12 @@ class SelectionActivity : AppCompatActivity() {
         super.onResume()
         binding.tableAllCharts.let {
             it.removeAllViews()
-            model.setRows(this, getListOfChartTitles(), it)
+
+            model.setTable(this).observe(this, {rows ->
+                for (row in rows)
+                    it.addView(row)
+            })
         }
-        binding.tableAllCharts.removeAllViews()
-    }
-
-    private fun getListOfChartTitles(): List<String>? {
-        val titleID = ExtIOData.getListOfDirs(this, "")
-
-        return try {
-            titleID.map { id ->
-                val filename = "$id/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
-                val data = ExtIOData.readLinesFromFile(this, filename)
-                if (data != null && data.size > 1 && data[1] != null)
-                    data[1].substring(0, data[1].length-1)
-                else
-                    NOT_APPLICABLE
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-
     }
 
     private fun setWidgets() {
@@ -87,20 +68,12 @@ class SelectionActivity : AppCompatActivity() {
                 val chartTitle = editText.text.toString()
                 if (chartTitle != "") {
                     createNewChart(chartTitle)
-                    model.addRow(this@SelectionActivity, chartTitle, binding.tableAllCharts)
-//                    binding.tableAllCharts.removeAllViews()
-//                    binding.tableAllCharts.addView(addRow(chartTitle))
+                    binding.tableAllCharts.addView(model.addRow(this@SelectionActivity, chartTitle))
                 }
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
         }
         newChartDialog = dialog.create()
-    }
-
-    private fun addRow(title: String): View {
-        return TextView(this).apply {
-            text = title
-        }
     }
 
     private fun createNewChart(chartName: String) {
