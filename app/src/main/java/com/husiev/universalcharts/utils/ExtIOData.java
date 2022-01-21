@@ -97,4 +97,21 @@ public class ExtIOData {
             return null;
         }
     }
+
+    public static void deleteDir(Context context, String path) {
+        File file = new File(context.getExternalFilesDir(null), path);
+        deleteRecursive(file);
+    }
+
+    private static void deleteRecursive(File fileOrDirectory) {
+        try {
+            if (fileOrDirectory.isDirectory())
+                for (File child : fileOrDirectory.listFiles())
+                    deleteRecursive(child);
+
+            fileOrDirectory.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
