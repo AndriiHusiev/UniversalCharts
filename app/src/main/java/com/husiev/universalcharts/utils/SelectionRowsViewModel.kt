@@ -35,20 +35,6 @@ class SelectionRowsViewModel : ViewModel() {
         return tableRows
     }
 
-    private fun getTitle(context: Context, id: String): String? {
-        return try {
-            val filename = "$id/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
-            val data = ExtIOData.readLinesFromFile(context, filename)
-            if (data != null && data.size > 1 && data[1] != null)
-                data[1].substring(0, data[1].length-1)
-            else
-                null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
     fun addRow(context: Context, title: String, id: String) : TableRow {
         return TableRow(context).apply {
             layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -58,10 +44,24 @@ class SelectionRowsViewModel : ViewModel() {
             setBackgroundResource(R.drawable.selector_tablerow_highlighter)
             setOnClickListener {
                 val intent = Intent(context, ChartsActivity().javaClass)
-                intent.putExtra("chartID", id)
+                intent.putExtra(INTENT_CHART_ID, id)
                 context.startActivity(intent)
             }
 //            setOnLongClickListener({ // Remove chart })
         }
+    }
+}
+
+fun getTitle(context: Context, id: String?): String? {
+    return try {
+        val filename = "$id/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
+        val data = ExtIOData.readLinesFromFile(context, filename)
+        if (data != null && data.size > 1 && data[1] != null)
+            data[1].substring(0, data[1].length-1)
+        else
+            null
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }
