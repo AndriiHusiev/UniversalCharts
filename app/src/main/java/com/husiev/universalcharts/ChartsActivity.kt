@@ -1,15 +1,23 @@
 package com.husiev.universalcharts
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.PointF
+import android.graphics.Typeface
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.MarkerView
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.charts.SimpleChart
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
@@ -34,6 +42,7 @@ class ChartsActivity : AppCompatActivity() {
 
         setMenu()
         setTitle()
+        initialChartAdjusting()
     }
 
     override fun onResume() {
@@ -64,13 +73,79 @@ class ChartsActivity : AppCompatActivity() {
         for (i in 0 until CHARTS_NUMBER) {
             val data = List(COUNT_OF_POINTS) { PointF() }
             for (j in 0 until COUNT_OF_POINTS) {
-                data[j].set(j.toFloat() + 1.2f, 100f * random.nextFloat())
+                data[j].set(j.toFloat() + 2f, 100f * random.nextFloat())
                 chartManager.xAxisLabel.add(j.toString())
             }
             chartManager.chartData.add(SimpleChart("data_0$i", data))
         }
     }
 
+    //<editor-fold desc="Initial Chart Adjusting">
+    private fun initialChartAdjusting() {
+        setChartMixProperties()
+        setChartMarker()
+    }
+
+    private fun setChartMixProperties() {
+        binding.combinedChartLayout.apply {
+            setScaleEnabled(false)
+            setDrawBorders(true)
+            setBorderColor(COLOR_TEXT_DARK)
+            isDoubleTapToZoomEnabled = false
+            isAutoScaleMinMaxEnabled = false
+            description = Description().apply { text = "" }
+            legend.textColor = COLOR_TEXT_DARK
+            xAxis.apply {
+                textColor = COLOR_TEXT_DARK
+                position = XAxis.XAxisPosition.BOTTOM
+                typeface = Typeface.DEFAULT_BOLD
+                isGranularityEnabled = true
+                granularity = 1F
+            }
+            axisLeft.apply {
+                textColor = COLOR_TEXT_DARK
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            axisRight.apply {
+                textColor = COLOR_TEXT_DARK
+                typeface = Typeface.DEFAULT_BOLD
+                spaceMin = 0F
+            }
+        }
+    }
+
+    private fun setChartMarker() {
+        val marker = MyMarkerView(this, R.layout.chart_marker_view_layout)
+        binding.combinedChartLayout.apply {
+            setMarker(marker)
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry, h: Highlight) {
+                    marker.refreshContent(e, h)
+                }
+
+                override fun onNothingSelected() {}
+            })
+        }
+    }
+
+    private class MyMarkerView(context: Context?, layoutResource: Int) : MarkerView(context, layoutResource) {
+        private var tvContent: TextView? = null
+
+        init {
+            // find layout components
+            tvContent = findViewById(R.id.tvContent)
+        }
+
+        // callbacks everytime the MarkerView is redrawn,
+        // can be used to update the content (user-interface)
+        override fun refreshContent(e: Entry?, highlight: Highlight?) {
+            super.refreshContent(e, highlight)
+            tvContent?.text = "${e?.y}"
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Fulfilling chart with data">
     private fun prepareDataForChart() {
         binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabel)
         binding.combinedChartLayout.data = CombinedData().apply { this.setData(prepareLineData()) }
@@ -87,8 +162,10 @@ class ChartsActivity : AppCompatActivity() {
     private fun getLineDataSet(index: Int): LineDataSet {
         val entries = mutableListOf<Entry>()
 
-        for (i in 0 until chartManager.chartData[index].data.size) {
-            entries.add(i, Entry(chartManager.chartData[index].data[i].x,chartManager.chartData[index].data[i].y))
+        with(chartManager.chartData[index].data) {
+            for (i in 0 until size) {
+                entries.add(i, Entry(this[i].x, this[i].y))
+            }
         }
 
         return LineDataSet(entries, chartManager.chartData[index].label).apply {
@@ -117,5 +194,6 @@ class ChartsActivity : AppCompatActivity() {
             return _values[value.toInt() - 1]
         }
     }
+    //</editor-fold>
 
 }
