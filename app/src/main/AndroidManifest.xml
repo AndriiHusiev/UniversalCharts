@@ -11,6 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UniversalCharts">
         <activity
+            android:name=".EditActivity"
+            android:exported="false"
+            android:label="@string/title_activity_edit"
+            android:theme="@style/Theme.UniversalCharts.NoActionBar" />
+        <activity
             android:name=".ChartsActivity"
             android:exported="false"
             android:label="@string/title_activity_charts"

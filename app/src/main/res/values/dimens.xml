@@ -9,4 +9,6 @@
     <dimen name="text_size_big">20.0sp</dimen>
     <dimen name="text_size_medium">16.0sp</dimen>
     <dimen name="text_size_small">12.0sp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

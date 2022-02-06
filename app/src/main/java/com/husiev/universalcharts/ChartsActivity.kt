@@ -1,10 +1,13 @@
 package com.husiev.universalcharts
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
@@ -20,11 +23,9 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.charts.SimpleChart
+import com.husiev.universalcharts.charts.convertCsvToStringMatrix
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
-import com.husiev.universalcharts.utils.CHARTS_NUMBER
-import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
-import com.husiev.universalcharts.utils.INTENT_CHART_ID
-import com.husiev.universalcharts.utils.getTitle
+import com.husiev.universalcharts.utils.*
 import kotlin.random.Random
 
 class ChartsActivity : AppCompatActivity() {
@@ -47,14 +48,35 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        createFakeChartData()
-        prepareDataForChart()
+//        createFakeChartData()
+        if (loadChartFromFile())
+            prepareDataForChart()
         binding.combinedChartLayout.invalidate()
     }
 
     //<editor-fold desc="Common Initialization">
     private fun setMenu() {
         setSupportActionBar(binding.toolbarCharts)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        when(item.itemId) {
+            R.id.action_settings -> return true
+            R.id.action_edit -> {
+                val intent = Intent(this, EditActivity().javaClass)
+                intent.putExtra(INTENT_CHART_ID, chartID)
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setTitle() {
@@ -65,6 +87,16 @@ class ChartsActivity : AppCompatActivity() {
         }
     }
     //</editor-fold>
+
+    private fun loadChartFromFile(): Boolean {
+        val dataCsv = ExtIOData.readLinesFromFile(this, chartID?.let { getActualFilename(it) })
+        dataCsv?.let { lines ->
+            convertCsvToStringMatrix(lines)?.let {
+                chartManager.setChartData(it)
+            }
+        }
+        return chartManager.chartData.isNotEmpty()
+    }
 
     private fun createFakeChartData() {
         val COUNT_OF_POINTS = 6

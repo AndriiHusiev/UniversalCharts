@@ -7,3 +7,6 @@ const val NEW_LINE = "\n"
 const val INTENT_CHART_ID = "chartID"
 const val CHARTS_NUMBER = 5
 const val COLOR_TEXT_DARK: Int = 0xFF51514B.toInt()
+const val CHART_DATA_FILENAME = "data"
+
+fun getActualFilename(chartID: String) = "$chartID/$CHART_DATA_FILENAME$FILE_EXTENSION_CSV"

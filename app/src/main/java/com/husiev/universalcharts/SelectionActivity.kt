@@ -61,8 +61,8 @@ class SelectionActivity : AppCompatActivity() {
     }
 
     private fun setRemoveChartDialog() {
-        val title = resources.getString(R.string.alert_dialog_delete_chart_header)
-        val message = resources.getString(R.string.alert_dialog_list_item_remove_confirm)
+        val title = resources.getString(R.string.alert_dialog_header_delete_chart)
+        val message = resources.getString(R.string.alert_dialog_message_list_item_remove_confirm)
 
         val dialog = AlertDialog.Builder(this).apply {
             setTitle(title)
@@ -85,7 +85,7 @@ class SelectionActivity : AppCompatActivity() {
 
     //<editor-fold desc="NewChart Dialog">
     private fun setNewChartDialog() {
-        val title = resources.getString(R.string.alert_dialog_choose_chart_name)
+        val title = resources.getString(R.string.alert_dialog_header_choose_chart_name)
         val editText = EditText(this)
 
         val dialog = AlertDialog.Builder(this).apply {
