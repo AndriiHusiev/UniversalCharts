@@ -1,6 +1,7 @@
 package com.husiev.universalcharts.charts
 
 import android.graphics.PointF
+import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
 import java.lang.Exception
 
@@ -8,13 +9,21 @@ class ChartManager {
     val chartData = mutableListOf<SimpleChart>()
     val xAxisLabel = mutableListOf<String>()
 
-    fun setChartData(data: Array<Array<String>>) {
-        data.forEach {
-            val line = mutableListOf<PointF>()
+    fun setChartData(lines: List<String>) {
+        chartData.clear()
+        val data = convertCsvToStringMatrix(lines)
+        for (i in 0 until CHARTS_NUMBER) {
+            chartData.add(SimpleChart("data0$i"))
+        }
+        data?.let {
             for (i in it.indices) {
-                line.add(PointF(i.toFloat() + 1, it[i].toFloat()))
+                for (j in it[i].indices) {
+                    val x = i.toFloat()
+                    val y = it[i][j].toFloatOrNull() ?: 0f
+                    chartData[j].data.add(PointF(x, y))
+                    xAxisLabel.add(j.toString())
+                }
             }
-            chartData.add(SimpleChart("data", line))
         }
     }
 }
@@ -30,6 +39,7 @@ fun convertCsvToStringMatrix(data: List<String>): Array<Array<String>>? {
             for (i in line.indices) {
                 if (line[i] == CSV_CELL_SEPARATOR) {
                     cells += cell
+                    cell = ""
                 }
                 else {
                     cell += line[i]

@@ -58,6 +58,16 @@ class EditTableRow(context: Context) : LinearLayout(context) {
             else -> null
         }
     }
+
+    fun getCellsAsCsv(): String {
+        return with(binding) {
+            "${textChart01Point.text}$CSV_CELL_SEPARATOR" +
+            "${textChart02Point.text}$CSV_CELL_SEPARATOR" +
+            "${textChart03Point.text}$CSV_CELL_SEPARATOR" +
+            "${textChart04Point.text}$CSV_CELL_SEPARATOR" +
+            "${textChart05Point.text}$CSV_CELL_SEPARATOR"
+        }
+    }
 }
 
 fun tagOfEditTableCell(rowIndex: Int, cellIndex: Int) = "$rowIndex$cellIndex"
@@ -65,6 +75,6 @@ fun tagOfEditTableCell(rowIndex: Int, cellIndex: Int) = "$rowIndex$cellIndex"
 fun getPointPosition(tag: String): Point {
     return Point().apply {
         x = tag[tag.length-1].digitToInt()
-        y = tag.substring(0, tag.length-2).toInt()
+        y = tag.substring(0, tag.length-1).toInt()
     }
 }

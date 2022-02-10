@@ -23,7 +23,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.charts.SimpleChart
-import com.husiev.universalcharts.charts.convertCsvToStringMatrix
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
 import kotlin.random.Random
@@ -48,7 +47,6 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-//        createFakeChartData()
         if (loadChartFromFile())
             prepareDataForChart()
         binding.combinedChartLayout.invalidate()
@@ -90,26 +88,10 @@ class ChartsActivity : AppCompatActivity() {
 
     private fun loadChartFromFile(): Boolean {
         val dataCsv = ExtIOData.readLinesFromFile(this, chartID?.let { getActualFilename(it) })
-        dataCsv?.let { lines ->
-            convertCsvToStringMatrix(lines)?.let {
-                chartManager.setChartData(it)
-            }
+        dataCsv?.let {
+            chartManager.setChartData(it)
         }
         return chartManager.chartData.isNotEmpty()
-    }
-
-    private fun createFakeChartData() {
-        val COUNT_OF_POINTS = 6
-        val random = Random
-
-        for (i in 0 until CHARTS_NUMBER) {
-            val data = List(COUNT_OF_POINTS) { PointF() }
-            for (j in 0 until COUNT_OF_POINTS) {
-                data[j].set(j.toFloat() + 2f, 100f * random.nextFloat())
-                chartManager.xAxisLabel.add(j.toString())
-            }
-            chartManager.chartData.add(SimpleChart("data_0$i", data))
-        }
     }
 
     //<editor-fold desc="Initial Chart Adjusting">
@@ -223,7 +205,7 @@ class ChartsActivity : AppCompatActivity() {
         private val _values: List<String> = values
 
         override fun getFormattedValue(value: Float): String {
-            return _values[value.toInt() - 1]
+            return _values[value.toInt() + 1]
         }
     }
     //</editor-fold>

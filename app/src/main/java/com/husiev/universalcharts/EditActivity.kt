@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputType.*
 import android.view.Menu
+import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.husiev.universalcharts.databinding.ActivityEditBinding
@@ -17,7 +19,7 @@ class EditActivity : AppCompatActivity() {
     private var chartID: String? = null
     private var chartDataFilename: String? = null
     private var tagCell: String = ""
-    private var customTable: List<EditTableRow> = mutableListOf()
+    private var customTable = mutableListOf<EditTableRow>()
     private val model = EditRowsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,27 +40,30 @@ class EditActivity : AppCompatActivity() {
 
         if (customTable.isEmpty() ) {
             model.loadChartDataFromFile(this, chartDataFilename).observe(this) {rows ->
-                customTable = rows
+                customTable = rows as MutableList<EditTableRow>
+                binding.tableEditChartData.removeAllViews()
+                for (i in customTable.indices) {
+                    setListeners(customTable[i], i)
+                    binding.tableEditChartData.addView(customTable[i])
+                }
             }
         }
 
-        binding.tableEditChartData.removeAllViews()
-        for (i in customTable.indices) {
-            for (j in 0 until CHARTS_NUMBER) {
-                customTable[i].getCell(j)?.apply {
-                    setOnClickListener {
-                        tagCell = tagOfEditTableCell(i, j)
-                        newValueDialog.show()
-                    }
-                    setOnLongClickListener {
-                        tagCell = tagOfEditTableCell(i, j)
-                        removeValueDialog.show()
-                        return@setOnLongClickListener true
-                    }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // this means that this activity will not be recreated now, user is leaving it
+        // or the activity is otherwise finishing
+        if (isFinishing)
+            if (binding.tableEditChartData.childCount > 0) {
+                var dataCsv = ""
+                for (row in customTable) {
+                    dataCsv += row.getCellsAsCsv() + NEW_LINE
                 }
+                ExtIOData.saveDataToFile(this, chartDataFilename, dataCsv.substring(0, dataCsv.length-2).toByteArray(), false)
             }
-            binding.tableEditChartData.addView(customTable[i])
-        }
     }
 
     //<editor-fold desc="Menu">
@@ -79,6 +84,30 @@ class EditActivity : AppCompatActivity() {
             it.setDisplayShowHomeEnabled(true)
         }
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_add_row -> {
+                with(binding.tableEditChartData) {
+                    val row = model.addRow(this@EditActivity, childCount+1, null)
+                    setListeners(row, childCount)
+                    customTable.add(row)
+                    addView(row)
+                }
+            }
+            R.id.action_delete_row -> {
+                with(binding.tableEditChartData) {
+                    if (childCount > 0) {
+                        val child = getChildAt(childCount - 1)
+                        (child as ViewGroup).removeAllViews()
+                        removeViewAt(childCount-1)
+                        customTable.removeAt(customTable.lastIndex)
+                    }
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
     //</editor-fold>
 
     //<editor-fold desc="Initialization">
@@ -90,12 +119,29 @@ class EditActivity : AppCompatActivity() {
     private fun initActivityItems() {
         binding.tableEditChartData.setColumnStretchable(0, true)
     }
+
+    private fun setListeners(row: EditTableRow, rowIndex: Int) {
+        for (i in 0 until CHARTS_NUMBER) {
+            row.getCell(i)?.setOnClickListener {
+                tagCell = tagOfEditTableCell(rowIndex, i)
+//                (newValueDialog.listView[0] as EditText).setText("")
+//                findViewById<EditText>(1100011.toInt()).setText("")
+                newValueDialog.show()
+            }
+            row.getCell(i)?.setOnLongClickListener {
+                tagCell = tagOfEditTableCell(rowIndex, i)
+                removeValueDialog.show()
+                return@setOnLongClickListener true
+            }
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="Dialogs">
     private fun setNewValueDialog() {
         val title = resources.getString(R.string.alert_dialog_header_enter_new_value)
         val editText = EditText(this).apply {
+            setText("")
             inputType = TYPE_CLASS_NUMBER + TYPE_NUMBER_FLAG_DECIMAL + TYPE_NUMBER_FLAG_SIGNED
         }
 

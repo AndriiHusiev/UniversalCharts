@@ -28,11 +28,12 @@ class EditRowsViewModel : ViewModel() {
         return tableRows
     }
 
-    fun addRow(context: Context, index: Int, cells: Array<String>) : EditTableRow {
+    fun addRow(context: Context, index: Int, cells: Array<String>?) : EditTableRow {
         return EditTableRow(context).apply {
             rowIndex = index
-            for (i in cells.indices) {
-                this.setCell(i, cells[i])
+            val data: Array<String> = cells ?: arrayOf("", "", "", "", "")
+            for (i in data.indices) {
+                this.setCell(i, data[i])
             }
         }
     }
