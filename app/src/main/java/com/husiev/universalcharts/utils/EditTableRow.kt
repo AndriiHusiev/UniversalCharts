@@ -22,6 +22,11 @@ class EditTableRow(context: Context) : LinearLayout(context) {
     }
 
     var rowIndex: Int = 0
+        set(value) {
+            val x = value + 1
+            binding.textChartPointNumber.text = x.toString()
+            field = value
+        }
 
     fun setCell(index: Int, text: String) {
         when(index) {

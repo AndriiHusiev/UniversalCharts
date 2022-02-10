@@ -3,7 +3,6 @@ package com.husiev.universalcharts
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.PointF
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Menu
@@ -21,11 +20,10 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.utils.MPPointF
 import com.husiev.universalcharts.charts.ChartManager
-import com.husiev.universalcharts.charts.SimpleChart
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
-import kotlin.random.Random
 
 class ChartsActivity : AppCompatActivity() {
 
@@ -144,6 +142,7 @@ class ChartsActivity : AppCompatActivity() {
 
     private class MyMarkerView(context: Context?, layoutResource: Int) : MarkerView(context, layoutResource) {
         private var tvContent: TextView? = null
+        private var mOffset: MPPointF? = null
 
         init {
             // find layout components
@@ -155,6 +154,14 @@ class ChartsActivity : AppCompatActivity() {
         override fun refreshContent(e: Entry?, highlight: Highlight?) {
             super.refreshContent(e, highlight)
             tvContent?.text = "${e?.y}"
+        }
+
+        override fun getOffset(): MPPointF {
+            if (mOffset == null) {
+                // center the marker horizontally and vertically
+                mOffset = MPPointF(-(width.toFloat() / 2), (-height).toFloat())
+            }
+            return mOffset as MPPointF
         }
     }
     //</editor-fold>
