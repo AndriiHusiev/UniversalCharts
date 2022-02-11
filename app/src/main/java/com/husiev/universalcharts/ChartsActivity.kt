@@ -183,9 +183,10 @@ class ChartsActivity : AppCompatActivity() {
     private fun getLineDataSet(index: Int): LineDataSet {
         val entries = mutableListOf<Entry>()
 
-        with(chartManager.chartData[index].data) {
-            for (i in 0 until size) {
-                entries.add(i, Entry(this[i].x, this[i].y))
+        with(chartManager.chartData[index]) {
+            for (i in 0 until data.size) {
+                if (!skipCell[i])
+                    entries.add(Entry(data[i].x, data[i].y))
             }
         }
 

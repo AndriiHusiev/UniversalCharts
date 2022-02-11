@@ -62,7 +62,7 @@ class EditActivity : AppCompatActivity() {
                 for (row in customTable) {
                     dataCsv += row.getCellsAsCsv() + NEW_LINE
                 }
-                ExtIOData.saveDataToFile(this, chartDataFilename, dataCsv.substring(0, dataCsv.length-2).toByteArray(), false)
+                ExtIOData.saveDataToFile(this, chartDataFilename, dataCsv.substring(0, dataCsv.lastIndex).toByteArray(), false)
             }
     }
 

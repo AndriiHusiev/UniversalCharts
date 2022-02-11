@@ -1,6 +1,7 @@
 package com.husiev.universalcharts.charts
 
 import android.graphics.PointF
+import android.util.Log
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
 import java.lang.Exception
@@ -19,7 +20,13 @@ class ChartManager {
             for (i in it.indices) {
                 for (j in it[i].indices) {
                     val x = i.toFloat()
-                    val y = it[i][j].toFloatOrNull() ?: 0f
+                    val y = if (it[i][j] != "") {
+                        chartData[j].skipCell += false
+                        it[i][j].toFloat()
+                    } else {
+                        chartData[j].skipCell += true
+                        0f
+                    }
                     chartData[j].data.add(PointF(x, y))
                     xAxisLabel.add(j.toString())
                 }
