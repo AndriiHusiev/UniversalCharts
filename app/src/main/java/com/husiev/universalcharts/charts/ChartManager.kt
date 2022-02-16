@@ -33,30 +33,32 @@ class ChartManager {
             }
         }
     }
-}
 
-fun convertCsvToStringMatrix(data: List<String>): Array<Array<String>>? {
-    var chartData = arrayOf<Array<String>>()
+    companion object {
+        fun convertCsvToStringMatrix(data: List<String>): Array<Array<String>>? {
+            var chartData = arrayOf<Array<String>>()
 
-    try {
-        data.forEach { line ->
-            var cell = ""
-            var cells = arrayOf<String>()
+            try {
+                data.forEach { line ->
+                    var cell = ""
+                    var cells = arrayOf<String>()
 
-            for (i in line.indices) {
-                if (line[i] == CSV_CELL_SEPARATOR) {
-                    cells += cell
-                    cell = ""
+                    for (i in line.indices) {
+                        if (line[i] == CSV_CELL_SEPARATOR) {
+                            cells += cell
+                            cell = ""
+                        }
+                        else {
+                            cell += line[i]
+                        }
+                    }
+                    chartData += cells
                 }
-                else {
-                    cell += line[i]
-                }
+                return chartData
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
             }
-            chartData += cells
         }
-        return chartData
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return null
     }
 }

@@ -1,4 +1,4 @@
-package com.husiev.universalcharts.utils
+package com.husiev.universalcharts.viewmodels
 
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.husiev.universalcharts.ChartsActivity
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -47,21 +48,22 @@ class SelectionRowsViewModel : ViewModel() {
                 intent.putExtra(INTENT_CHART_ID, id)
                 context.startActivity(intent)
             }
-//            setOnLongClickListener({ // Remove chart })
         }
     }
-}
 
-fun getTitle(context: Context, id: String?): String? {
-    return try {
-        val filename = "$id/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
-        val data = ExtIOData.readLinesFromFile(context, filename)
-        if (data != null && data.size > 1 && data[1] != null)
-            data[1].substring(0, data[1].length-1)
-        else
-            null
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
+    companion object {
+        fun getTitle(context: Context, id: String?): String? {
+            return try {
+                val filename = "$id/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
+                val data = ExtIOData.readLinesFromFile(context, filename)
+                if (data != null && data.size > 1 && data[1] != null)
+                    data[1].substring(0, data[1].length-1)
+                else
+                    null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
     }
 }

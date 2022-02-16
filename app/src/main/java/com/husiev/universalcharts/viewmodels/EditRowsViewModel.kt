@@ -1,4 +1,4 @@
-package com.husiev.universalcharts.utils
+package com.husiev.universalcharts.viewmodels
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.husiev.universalcharts.charts.convertCsvToStringMatrix
+import com.husiev.universalcharts.utils.EditTableRow
+import com.husiev.universalcharts.utils.ExtIOData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

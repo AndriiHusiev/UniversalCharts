@@ -24,6 +24,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
+import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel.Companion.getTitle
 
 class ChartsActivity : AppCompatActivity() {
 

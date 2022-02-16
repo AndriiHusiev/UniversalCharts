@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.husiev.universalcharts.databinding.ActivityMainBinding
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
+import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel
 import java.util.*
 
 class SelectionActivity : AppCompatActivity() {
@@ -33,12 +34,12 @@ class SelectionActivity : AppCompatActivity() {
         binding.tableAllCharts.let { table ->
             table.removeAllViews()
 
-            model.setTable(this).observe(this, {rows ->
+            model.setTable(this).observe(this) { rows ->
                 for (row in rows) {
                     row.setOnLongClickListener(setLongClickListener(row.tag as String))
                     table.addView(row)
                 }
-            })
+            }
         }
     }
 
@@ -71,12 +72,12 @@ class SelectionActivity : AppCompatActivity() {
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
                 ExtIOData.deleteDir(this@SelectionActivity, binding.tableAllCharts.tag as String?)
                 binding.tableAllCharts.removeAllViews()
-                model.setTable(this@SelectionActivity).observe(this@SelectionActivity, {rows ->
+                model.setTable(this@SelectionActivity).observe(this@SelectionActivity) { rows ->
                     for (row in rows) {
                         row.setOnLongClickListener(setLongClickListener(row.tag as String))
                         binding.tableAllCharts.addView(row)
                     }
-                })
+                }
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
         }

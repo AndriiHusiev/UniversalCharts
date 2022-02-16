@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.utils.*
+import com.husiev.universalcharts.viewmodels.EditRowsViewModel
 
 class EditActivity : AppCompatActivity() {
 
