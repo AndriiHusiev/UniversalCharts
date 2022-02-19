@@ -1,26 +1,21 @@
 package com.husiev.universalcharts
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.utils.MPPointF
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
@@ -140,31 +135,6 @@ class ChartsActivity : AppCompatActivity() {
             })
         }
     }
-
-    private class MyMarkerView(context: Context?, layoutResource: Int) : MarkerView(context, layoutResource) {
-        private var tvContent: TextView? = null
-        private var mOffset: MPPointF? = null
-
-        init {
-            // find layout components
-            tvContent = findViewById(R.id.tvContent)
-        }
-
-        // callbacks everytime the MarkerView is redrawn,
-        // can be used to update the content (user-interface)
-        override fun refreshContent(e: Entry?, highlight: Highlight?) {
-            super.refreshContent(e, highlight)
-            tvContent?.text = "${e?.y}"
-        }
-
-        override fun getOffset(): MPPointF {
-            if (mOffset == null) {
-                // center the marker horizontally and vertically
-                mOffset = MPPointF(-(width.toFloat() / 2), (-height).toFloat())
-            }
-            return mOffset as MPPointF
-        }
-    }
     //</editor-fold>
 
     //<editor-fold desc="Fulfilling chart with data">
@@ -210,13 +180,6 @@ class ChartsActivity : AppCompatActivity() {
     }
     //</editor-fold>
 
-    private class MyXAxisValueFormatter(values: List<String>): ValueFormatter() {
-        private val _values: List<String> = values
-
-        override fun getFormattedValue(value: Float): String {
-            return _values[value.toInt() + 1]
-        }
-    }
     //</editor-fold>
 
 }
