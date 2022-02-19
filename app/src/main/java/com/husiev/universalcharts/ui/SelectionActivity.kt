@@ -1,10 +1,12 @@
-package com.husiev.universalcharts
+package com.husiev.universalcharts.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityMainBinding
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
@@ -14,9 +16,9 @@ import java.util.*
 class SelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var model: SelectionRowsViewModel
     private lateinit var newChartDialog: AlertDialog
     private lateinit var removeChartDialog: AlertDialog
-    private val model = SelectionRowsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,7 @@ class SelectionActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setViewModel()
         setWidgets()
         setNewChartDialog()
         setRemoveChartDialog()
@@ -41,6 +44,10 @@ class SelectionActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun setViewModel() {
+        model = ViewModelProvider(this)[SelectionRowsViewModel::class.java]
     }
 
     private fun setWidgets() {

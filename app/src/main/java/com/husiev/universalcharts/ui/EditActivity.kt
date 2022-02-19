@@ -1,4 +1,4 @@
-package com.husiev.universalcharts
+package com.husiev.universalcharts.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.EditRowsViewModel

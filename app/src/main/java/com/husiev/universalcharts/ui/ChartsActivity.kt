@@ -1,4 +1,4 @@
-package com.husiev.universalcharts
+package com.husiev.universalcharts.ui
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
@@ -21,14 +22,16 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
+import com.husiev.universalcharts.R
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
-import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel.Companion.getTitle
+import com.husiev.universalcharts.viewmodels.ChartsActivityViewModel
 
 class ChartsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChartsBinding
+    private lateinit var model: ChartsActivityViewModel
     private val chartManager = ChartManager()
     private var chartID: String? = null
     private val chartColor = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.YELLOW)
@@ -39,6 +42,7 @@ class ChartsActivity : AppCompatActivity() {
         binding = ActivityChartsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setViewModel()
         setMenu()
         setTitle()
         initialChartAdjusting()
@@ -52,6 +56,10 @@ class ChartsActivity : AppCompatActivity() {
     }
 
     //<editor-fold desc="Common Initialization">
+    private fun setViewModel() {
+        model = ViewModelProvider(this)[ChartsActivityViewModel::class.java]
+    }
+
     private fun setMenu() {
         setSupportActionBar(binding.toolbarCharts)
     }
@@ -79,9 +87,8 @@ class ChartsActivity : AppCompatActivity() {
     private fun setTitle() {
         if (chartID == null)
             chartID = intent.getStringExtra(INTENT_CHART_ID)
-        getTitle(this, chartID).apply {
-            title = this
-        }
+
+        title = model.getChartTitle(chartID)
     }
     //</editor-fold>
 
