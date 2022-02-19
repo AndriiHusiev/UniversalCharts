@@ -2,22 +2,19 @@ package com.husiev.universalcharts
 
 import android.content.Context
 import com.husiev.universalcharts.utils.CHART_INFO_FILENAME
+import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.getListOfDirs
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
 import com.husiev.universalcharts.utils.FILE_EXTENSION_CSV
+import com.husiev.universalcharts.utils.NEW_LINE
+import java.util.*
 
 class DataRepository(context: Context) {
     private val rootDirectory = context.getExternalFilesDir(null)
 
     var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
-
-    fun createDirectory(pathname: String) {
-        if (rootDirectory != null) {
-            createDirectory(rootDirectory, pathname)
-        }
-    }
 
     fun saveDataToFile(filename: String, data: ByteArray?, append: Boolean) {
         if (rootDirectory != null) {
@@ -44,6 +41,29 @@ class DataRepository(context: Context) {
             e.printStackTrace()
             ""
         }
+    }
+
+    fun createNewChart(chartTitle: String): String {
+        // Actual timestamp is used as directory name
+        val dirName = Date().time.toString()
+        // Create directory with specified name
+        createDirectory(dirName)
+        val path = "$dirName/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
+        saveDataToFile(path, prepareDataToSaving(chartTitle).toByteArray(), false)
+        return dirName
+    }
+
+    private fun createDirectory(pathname: String) {
+        if (rootDirectory != null) {
+            createDirectory(rootDirectory, pathname)
+        }
+    }
+
+    private fun prepareDataToSaving(chartName: String): String {
+        val data: StringBuilder = StringBuilder()
+        data.append("Title").append(CSV_CELL_SEPARATOR).append(NEW_LINE)
+            .append(chartName).append(CSV_CELL_SEPARATOR).append(NEW_LINE)
+        return data.toString()
     }
 
     companion object {

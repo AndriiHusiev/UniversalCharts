@@ -10,7 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.husiev.universalcharts.ChartApplication
+import com.husiev.universalcharts.UChartApplication
 import com.husiev.universalcharts.DataRepository
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.ui.ChartsActivity
@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SelectionRowsViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: DataRepository = (application as ChartApplication).repository
+    private val repository: DataRepository = (application as UChartApplication).repository
 
     fun setTable(context: Context): LiveData<List<TableRow>> {
         val tableRows = MutableLiveData<List<TableRow>>()
@@ -51,7 +51,14 @@ class SelectionRowsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    private fun getChartTitle(id: String?): String {
+    private fun getChartTitle(id: String): String {
         return repository.getChartTitle(id)
+    }
+
+    fun createNewChart(chartTitle: String): LiveData<String> {
+        val chartId = MutableLiveData<String>()
+        chartId.postValue(repository.createNewChart(chartTitle))
+
+        return chartId
     }
 }
