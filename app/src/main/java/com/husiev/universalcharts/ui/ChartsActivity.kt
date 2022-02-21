@@ -50,9 +50,7 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (loadChartFromFile())
-            prepareDataForChart()
-        binding.combinedChartLayout.invalidate()
+        loadChartFromFile()
     }
 
     //<editor-fold desc="Common Initialization">
@@ -70,9 +68,6 @@ class ChartsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         when(item.itemId) {
             R.id.action_settings -> return true
             R.id.action_edit -> {
@@ -88,16 +83,18 @@ class ChartsActivity : AppCompatActivity() {
         if (chartID == null)
             chartID = intent.getStringExtra(INTENT_CHART_ID)
 
-        title = model.getChartTitle(chartID)
+        model.getChartTitle(chartID).observe(this) {
+            title = it
+        }
     }
     //</editor-fold>
 
-    private fun loadChartFromFile(): Boolean {
-        val dataCsv = ExtIOData.readLinesFromFile(this, chartID?.let { getActualFilename(it) })
-        dataCsv?.let {
-            chartManager.setChartData(it)
+    private fun loadChartFromFile() {
+        model.getChartData(chartID).observe(this) { data ->
+            chartManager.setChartData(data)
+            if (chartManager.chartData.isNotEmpty())
+                prepareDataForChart()
         }
-        return chartManager.chartData.isNotEmpty()
     }
 
     //<editor-fold desc="Initial Chart Adjusting">

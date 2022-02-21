@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.husiev.universalcharts.DataRepository
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.utils.*
@@ -16,13 +18,13 @@ import com.husiev.universalcharts.viewmodels.EditRowsViewModel
 class EditActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditBinding
+    private lateinit var model: EditRowsViewModel
     private lateinit var newValueDialog: AlertDialog
     private lateinit var removeValueDialog: AlertDialog
     private var chartID: String? = null
     private var chartDataFilename: String? = null
     private var tagCell: String = ""
     private var customTable = mutableListOf<EditTableRow>()
-    private val model = EditRowsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,7 @@ class EditActivity : AppCompatActivity() {
         initToolbar()
         getIntentData()
         initActivityItems()
+        setViewModel()
         setNewValueDialog()
         setRemoveValueDialog()
     }
@@ -64,7 +67,7 @@ class EditActivity : AppCompatActivity() {
                 for (row in customTable) {
                     dataCsv += row.getCellsAsCsv() + NEW_LINE
                 }
-                ExtIOData.saveDataToFile(this, chartDataFilename, dataCsv.substring(0, dataCsv.lastIndex).toByteArray(), false)
+                model.saveChartData(chartDataFilename, dataCsv.substring(0, dataCsv.lastIndex).toByteArray(), false)
             }
     }
 
@@ -91,7 +94,7 @@ class EditActivity : AppCompatActivity() {
         when(item.itemId) {
             R.id.action_add_row -> {
                 with(binding.tableEditChartData) {
-                    val row = model.addRow(this@EditActivity, childCount+1, null)
+                    val row = model.addRow(this@EditActivity, childCount, null)
                     setListeners(row, childCount)
                     customTable.add(row)
                     addView(row)
@@ -115,11 +118,15 @@ class EditActivity : AppCompatActivity() {
     //<editor-fold desc="Initialization">
     private fun getIntentData() {
         chartID = intent.getStringExtra("chartID")
-        chartDataFilename = chartID?.let { getActualFilename(it) }
+        chartDataFilename = chartID?.let { DataRepository.getActualFilename(it) }
     }
 
     private fun initActivityItems() {
         binding.tableEditChartData.setColumnStretchable(0, true)
+    }
+
+    private fun setViewModel() {
+        model = ViewModelProvider(this)[EditRowsViewModel::class.java]
     }
 
     private fun setListeners(row: EditTableRow, rowIndex: Int) {

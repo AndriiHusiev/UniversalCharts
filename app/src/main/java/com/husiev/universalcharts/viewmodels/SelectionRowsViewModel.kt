@@ -28,7 +28,7 @@ class SelectionRowsViewModel(application: Application) : AndroidViewModel(applic
             val chartID = repository.listOfDirectories
             if (chartID != null && chartID.isNotEmpty()) {
                 for (i in 0..chartID.lastIndex) {
-                    rows.add(addRow(context, getChartTitle(chartID[i]), chartID[i]))
+                    rows.add(addRow(context, repository.getChartTitle(chartID[i]), chartID[i]))
                 }
                 tableRows.postValue(rows)
             }
@@ -51,14 +51,17 @@ class SelectionRowsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    private fun getChartTitle(id: String): String {
-        return repository.getChartTitle(id)
-    }
-
     fun createNewChart(chartTitle: String): LiveData<String> {
         val chartId = MutableLiveData<String>()
-        chartId.postValue(repository.createNewChart(chartTitle))
-
+        viewModelScope.launch(Dispatchers.IO) {
+            chartId.postValue(repository.createNewChart(chartTitle))
+        }
         return chartId
+    }
+
+    fun deleteChart(id: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteChart(id)
+        }
     }
 }

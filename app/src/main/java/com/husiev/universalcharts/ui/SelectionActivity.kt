@@ -8,11 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityMainBinding
-import com.husiev.universalcharts.utils.*
-import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
 import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel
-import kotlinx.coroutines.coroutineScope
-import java.util.*
 
 class SelectionActivity : AppCompatActivity() {
 
@@ -78,7 +74,7 @@ class SelectionActivity : AppCompatActivity() {
             setMessage(message)
             setCancelable(true)
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
-                ExtIOData.deleteDir(this@SelectionActivity, binding.tableAllCharts.tag as String?)
+                model.deleteChart(binding.tableAllCharts.tag as String?)
                 binding.tableAllCharts.removeAllViews()
                 model.setTable(this@SelectionActivity).observe(this@SelectionActivity) { rows ->
                     for (row in rows) {

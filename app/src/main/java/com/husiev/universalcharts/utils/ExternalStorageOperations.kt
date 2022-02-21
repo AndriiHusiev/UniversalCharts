@@ -1,6 +1,5 @@
 package com.husiev.universalcharts.utils
 
-import android.content.Context
 import android.util.Log
 import java.io.*
 
@@ -81,6 +80,22 @@ class ExternalStorageOperations {
                 // not currently mounted.
                 Log.w("ExternalStorage", "Error reading $file", e)
                 null
+            }
+        }
+
+        fun deleteDirectory(rootDirectory: File, path: String) {
+            val file = File(rootDirectory, path)
+            deleteRecursive(file)
+        }
+
+        private fun deleteRecursive(fileOrDirectory: File) {
+            try {
+                if (fileOrDirectory.isDirectory)
+                    for (child in fileOrDirectory.listFiles())
+                        deleteRecursive(child)
+                fileOrDirectory.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
