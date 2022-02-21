@@ -23,7 +23,7 @@ class ExternalStorageOperations {
          * @param data saving data.
          * @param append set to true to append data to a file, or set to false to replace all data.
          */
-        fun saveDataToFile(rootDirectory: File, filename: String, data: ByteArray?, append: Boolean) {
+        fun saveDataToFile(rootDirectory: File, filename: String, data: ByteArray, append: Boolean) {
             val file = File(rootDirectory, filename)
             try {
                 val fileOutputStream = FileOutputStream(file, append)
@@ -91,8 +91,10 @@ class ExternalStorageOperations {
         private fun deleteRecursive(fileOrDirectory: File) {
             try {
                 if (fileOrDirectory.isDirectory)
-                    for (child in fileOrDirectory.listFiles())
-                        deleteRecursive(child)
+                    fileOrDirectory.listFiles()?.let {
+                        for (child in it)
+                            deleteRecursive(child)
+                    }
                 fileOrDirectory.delete()
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -13,12 +13,15 @@ import kotlinx.coroutines.launch
 
 class EditRowsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: DataRepository = (application as UChartApplication).repository
+    private var chartDataFilename: String? = null
 
-    fun loadChartDataFromFile(context: Context, filename: String?): LiveData<List<EditTableRow>> {
+    fun loadChartDataFromFile(context: Context, chartId: String?): LiveData<List<EditTableRow>> {
         val tableRows = MutableLiveData<List<EditTableRow>>()
+        chartDataFilename = chartId?.let { DataRepository.getActualFilename(it) }
+
         viewModelScope.launch(Dispatchers.IO) {
             val rows = mutableListOf<EditTableRow>()
-            val dataCsv = filename?.let { repository.getLinesFromFile(it) }
+            val dataCsv = chartDataFilename?.let { repository.getLinesFromFile(it) }
             dataCsv?.let { lines ->
                 convertCsvToStringMatrix(lines)?.let {
                     for (i in it.indices) {
@@ -41,9 +44,9 @@ class EditRowsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun saveChartData(filename: String?, data: ByteArray?, append: Boolean) {
+    fun saveChartData(data: Array<Array<String>>) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.saveData(filename, data, append)
+            repository.saveChartData(chartDataFilename, data)
         }
     }
 

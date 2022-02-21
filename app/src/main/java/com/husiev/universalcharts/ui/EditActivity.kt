@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.husiev.universalcharts.DataRepository
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.utils.*
@@ -22,7 +21,6 @@ class EditActivity : AppCompatActivity() {
     private lateinit var newValueDialog: AlertDialog
     private lateinit var removeValueDialog: AlertDialog
     private var chartID: String? = null
-    private var chartDataFilename: String? = null
     private var tagCell: String = ""
     private var customTable = mutableListOf<EditTableRow>()
 
@@ -44,7 +42,7 @@ class EditActivity : AppCompatActivity() {
         super.onResume()
 
         if (customTable.isEmpty() ) {
-            model.loadChartDataFromFile(this, chartDataFilename).observe(this) {rows ->
+            model.loadChartDataFromFile(this, chartID).observe(this) {rows ->
                 customTable = rows as MutableList<EditTableRow>
                 binding.tableEditChartData.removeAllViews()
                 for (i in customTable.indices) {
@@ -62,12 +60,12 @@ class EditActivity : AppCompatActivity() {
         // this means that this activity will not be recreated now, user is leaving it
         // or the activity is otherwise finishing
         if (isFinishing)
-            if (binding.tableEditChartData.childCount > 0) {
-                var dataCsv = ""
+            if (customTable.isNotEmpty()) {
+                var data = arrayOf<Array<String>>()
                 for (row in customTable) {
-                    dataCsv += row.getCellsAsCsv() + NEW_LINE
+                    data += row.getCellsAsArray()
                 }
-                model.saveChartData(chartDataFilename, dataCsv.substring(0, dataCsv.lastIndex).toByteArray(), false)
+                model.saveChartData(data)
             }
     }
 
@@ -118,7 +116,6 @@ class EditActivity : AppCompatActivity() {
     //<editor-fold desc="Initialization">
     private fun getIntentData() {
         chartID = intent.getStringExtra("chartID")
-        chartDataFilename = chartID?.let { DataRepository.getActualFilename(it) }
     }
 
     private fun initActivityItems() {

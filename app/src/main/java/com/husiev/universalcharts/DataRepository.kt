@@ -14,9 +14,15 @@ class DataRepository(context: Context) {
 
     var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
 
-    fun saveData(filename: String?, data: ByteArray?, append: Boolean) {
-        if (rootDirectory != null && filename != null) {
-            saveDataToFile(rootDirectory, filename, data, append)
+    fun saveChartData(filename: String?, data: Array<Array<String>>) {
+        if (filename != null) {
+            var dataCsv = ""
+            for (i in data.indices) {
+                for (j in data[i].indices)
+                    dataCsv += "${data[i][j]}$CSV_CELL_SEPARATOR"
+                dataCsv += NEW_LINE
+            }
+            saveData(filename, dataCsv.toByteArray())
         }
     }
 
@@ -49,13 +55,19 @@ class DataRepository(context: Context) {
         // Create directory with specified name
         createDirectory(dirName)
         val path = "$dirName/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
-        saveData(path, prepareDataToSaving(chartTitle).toByteArray(), false)
+        saveData(path, prepareDataToSaving(chartTitle).toByteArray())
         return dirName
     }
 
     private fun createDirectory(pathname: String) {
         if (rootDirectory != null) {
             createDirectory(rootDirectory, pathname)
+        }
+    }
+
+    private fun saveData(filename: String, data: ByteArray, append: Boolean = false) {
+        if (rootDirectory != null) {
+            saveDataToFile(rootDirectory, filename, data, append)
         }
     }
 
