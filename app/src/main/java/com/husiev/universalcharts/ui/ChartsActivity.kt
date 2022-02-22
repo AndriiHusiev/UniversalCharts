@@ -83,17 +83,19 @@ class ChartsActivity : AppCompatActivity() {
         if (chartID == null)
             chartID = intent.getStringExtra(INTENT_CHART_ID)
 
-        model.getChartTitle(chartID).observe(this) {
+        model.chartId = chartID
+        model.getChartTitle().observe(this) {
             title = it
         }
     }
     //</editor-fold>
 
     private fun loadChartFromFile() {
-        model.getChartData(chartID).observe(this) { data ->
+        model.getChartData().observe(this) { data ->
             chartManager.setChartData(data)
             if (chartManager.chartData.isNotEmpty())
                 prepareDataForChart()
+            binding.combinedChartLayout.invalidate()
         }
     }
 

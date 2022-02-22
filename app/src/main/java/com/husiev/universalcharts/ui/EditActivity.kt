@@ -31,9 +31,9 @@ class EditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initToolbar()
+        setViewModel()
         getIntentData()
         initActivityItems()
-        setViewModel()
         setNewValueDialog()
         setRemoveValueDialog()
     }
@@ -42,7 +42,7 @@ class EditActivity : AppCompatActivity() {
         super.onResume()
 
         if (customTable.isEmpty() ) {
-            model.loadChartDataFromFile(this, chartID).observe(this) {rows ->
+            model.loadChartDataFromFile(this).observe(this) {rows ->
                 customTable = rows as MutableList<EditTableRow>
                 binding.tableEditChartData.removeAllViews()
                 for (i in customTable.indices) {
@@ -116,6 +116,7 @@ class EditActivity : AppCompatActivity() {
     //<editor-fold desc="Initialization">
     private fun getIntentData() {
         chartID = intent.getStringExtra("chartID")
+        model.chartId = chartID
     }
 
     private fun initActivityItems() {

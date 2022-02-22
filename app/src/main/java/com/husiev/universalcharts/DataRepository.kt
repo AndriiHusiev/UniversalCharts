@@ -14,8 +14,9 @@ class DataRepository(context: Context) {
 
     var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
 
-    fun saveChartData(filename: String?, data: Array<Array<String>>) {
-        if (filename != null) {
+    fun saveChartData(chartId: String?, data: Array<Array<String>>) {
+        if (chartId != null) {
+            val filename = getActualFilename(chartId)
             var dataCsv = ""
             for (i in data.indices) {
                 for (j in data[i].indices)
@@ -26,7 +27,7 @@ class DataRepository(context: Context) {
         }
     }
 
-    fun getLinesFromFile(filename: String): List<String>? {
+    private fun getLinesFromFile(filename: String): List<String>? {
         return if (rootDirectory != null)
             readLinesFromFile(rootDirectory, filename)
         else
@@ -86,8 +87,40 @@ class DataRepository(context: Context) {
         }
     }
 
-    fun getChartData(chartId: String): List<String>? {
-        return getLinesFromFile(getActualFilename(chartId))
+    fun getChartData(chartId: String?): Array<Array<String>>? {
+        if (chartId == null)
+            return null
+        val filename = getActualFilename(chartId)
+        val lines = getLinesFromFile(filename)
+        return convertCsvToStringMatrix(lines)
+    }
+
+    private fun convertCsvToStringMatrix(data: List<String>?): Array<Array<String>>? {
+        if (data == null) return null
+
+        var chartData = arrayOf<Array<String>>()
+
+        try {
+            data.forEach { line ->
+                var cell = ""
+                var cells = arrayOf<String>()
+
+                for (i in line.indices) {
+                    if (line[i] == CSV_CELL_SEPARATOR) {
+                        cells += cell
+                        cell = ""
+                    }
+                    else {
+                        cell += line[i]
+                    }
+                }
+                chartData += cells
+            }
+            return chartData
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
 
     companion object {
@@ -102,6 +135,6 @@ class DataRepository(context: Context) {
             }
         }
 
-        fun getActualFilename(chartId: String) = "$chartId/$CHART_DATA_FILENAME$FILE_EXTENSION_CSV"
+        private fun getActualFilename(chartId: String) = "$chartId/$CHART_DATA_FILENAME$FILE_EXTENSION_CSV"
     }
 }

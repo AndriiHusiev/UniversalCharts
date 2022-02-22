@@ -12,19 +12,24 @@ import kotlinx.coroutines.launch
 
 class ChartsActivityViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: DataRepository = (application as UChartApplication).repository
+    var chartId: String? = null
+        set(value) {
+            if (value != null)
+                field = value
+        }
 
-    fun getChartTitle(id: String?): LiveData<String> {
+    fun getChartTitle(): LiveData<String> {
         val chartTitle = MutableLiveData<String>()
         viewModelScope.launch(Dispatchers.IO) {
-            chartTitle.postValue(repository.getChartTitle(id))
+            chartTitle.postValue(repository.getChartTitle(chartId))
         }
         return chartTitle
     }
 
-    fun getChartData(id: String?): LiveData<List<String>> {
-        val chartData = MutableLiveData<List<String>>()
+    fun getChartData(): LiveData<Array<Array<String>>> {
+        val chartData = MutableLiveData<Array<Array<String>>>()
         viewModelScope.launch(Dispatchers.IO) {
-            id?.let { chartData.postValue(repository.getChartData(it)) }
+            chartData.postValue(repository.getChartData(chartId))
         }
         return chartData
     }
