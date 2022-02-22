@@ -4,6 +4,7 @@
     package="com.husiev.universalcharts">
 
     <application
+        android:name=".UChartApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,20 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UniversalCharts">
         <activity
-            android:name=".EditActivity"
+            android:name=".ui.EditActivity"
             android:exported="false"
             android:label="@string/title_activity_edit"
             android:theme="@style/Theme.UniversalCharts.NoActionBar" />
         <activity
-            android:name=".ChartsActivity"
+            android:name=".ui.ChartsActivity"
             android:exported="false"
             android:label="@string/title_activity_charts"
             android:theme="@style/Theme.UniversalCharts.NoActionBar" />
         <activity
-            android:name=".SelectionActivity"
+            android:name=".ui.SelectionActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:screenOrientation="sensorPortrait"
             android:theme="@style/Theme.UniversalCharts.NoActionBar"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.husiev.universalcharts
+package com.husiev.universalcharts.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.EditRowsViewModel
@@ -15,13 +17,12 @@ import com.husiev.universalcharts.viewmodels.EditRowsViewModel
 class EditActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditBinding
+    private lateinit var model: EditRowsViewModel
     private lateinit var newValueDialog: AlertDialog
     private lateinit var removeValueDialog: AlertDialog
     private var chartID: String? = null
-    private var chartDataFilename: String? = null
     private var tagCell: String = ""
     private var customTable = mutableListOf<EditTableRow>()
-    private val model = EditRowsViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class EditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initToolbar()
+        setViewModel()
         getIntentData()
         initActivityItems()
         setNewValueDialog()
@@ -40,7 +42,7 @@ class EditActivity : AppCompatActivity() {
         super.onResume()
 
         if (customTable.isEmpty() ) {
-            model.loadChartDataFromFile(this, chartDataFilename).observe(this) {rows ->
+            model.loadChartDataFromFile(this).observe(this) {rows ->
                 customTable = rows as MutableList<EditTableRow>
                 binding.tableEditChartData.removeAllViews()
                 for (i in customTable.indices) {
@@ -58,12 +60,12 @@ class EditActivity : AppCompatActivity() {
         // this means that this activity will not be recreated now, user is leaving it
         // or the activity is otherwise finishing
         if (isFinishing)
-            if (binding.tableEditChartData.childCount > 0) {
-                var dataCsv = ""
+            if (customTable.isNotEmpty()) {
+                var data = arrayOf<Array<String>>()
                 for (row in customTable) {
-                    dataCsv += row.getCellsAsCsv() + NEW_LINE
+                    data += row.getCellsAsArray()
                 }
-                ExtIOData.saveDataToFile(this, chartDataFilename, dataCsv.substring(0, dataCsv.lastIndex).toByteArray(), false)
+                model.saveChartData(data)
             }
     }
 
@@ -90,7 +92,7 @@ class EditActivity : AppCompatActivity() {
         when(item.itemId) {
             R.id.action_add_row -> {
                 with(binding.tableEditChartData) {
-                    val row = model.addRow(this@EditActivity, childCount+1, null)
+                    val row = model.addRow(this@EditActivity, childCount, null)
                     setListeners(row, childCount)
                     customTable.add(row)
                     addView(row)
@@ -114,11 +116,15 @@ class EditActivity : AppCompatActivity() {
     //<editor-fold desc="Initialization">
     private fun getIntentData() {
         chartID = intent.getStringExtra("chartID")
-        chartDataFilename = chartID?.let { getActualFilename(it) }
+        model.chartId = chartID
     }
 
     private fun initActivityItems() {
         binding.tableEditChartData.setColumnStretchable(0, true)
+    }
+
+    private fun setViewModel() {
+        model = ViewModelProvider(this)[EditRowsViewModel::class.java]
     }
 
     private fun setListeners(row: EditTableRow, rowIndex: Int) {

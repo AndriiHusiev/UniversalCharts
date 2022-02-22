@@ -64,13 +64,13 @@ class EditTableRow(context: Context) : LinearLayout(context) {
         }
     }
 
-    fun getCellsAsCsv(): String {
+    fun getCellsAsArray(): Array<String> {
         return with(binding) {
-            "${textChart01Point.text}$CSV_CELL_SEPARATOR" +
-            "${textChart02Point.text}$CSV_CELL_SEPARATOR" +
-            "${textChart03Point.text}$CSV_CELL_SEPARATOR" +
-            "${textChart04Point.text}$CSV_CELL_SEPARATOR" +
-            "${textChart05Point.text}$CSV_CELL_SEPARATOR"
+            arrayOf(textChart01Point.text.toString(),
+                    textChart02Point.text.toString(),
+                    textChart03Point.text.toString(),
+                    textChart04Point.text.toString(),
+                    textChart05Point.text.toString())
         }
     }
 }

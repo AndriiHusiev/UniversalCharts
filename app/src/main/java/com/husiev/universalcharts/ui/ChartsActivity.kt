@@ -1,4 +1,4 @@
-package com.husiev.universalcharts
+package com.husiev.universalcharts.ui
 
 import android.content.Intent
 import android.graphics.Color
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -19,11 +20,12 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.utils.*
-import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel.Companion.getTitle
+import com.husiev.universalcharts.viewmodels.ChartsActivityViewModel
 
 class ChartsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChartsBinding
+    private lateinit var model: ChartsActivityViewModel
     private val chartManager = ChartManager()
     private var chartID: String? = null
     private val chartColor = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.YELLOW)
@@ -34,6 +36,7 @@ class ChartsActivity : AppCompatActivity() {
         binding = ActivityChartsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setViewModel()
         setMenu()
         setTitle()
         initialChartAdjusting()
@@ -41,12 +44,14 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (loadChartFromFile())
-            prepareDataForChart()
-        binding.combinedChartLayout.invalidate()
+        loadChartFromFile()
     }
 
     //<editor-fold desc="Common Initialization">
+    private fun setViewModel() {
+        model = ViewModelProvider(this)[ChartsActivityViewModel::class.java]
+    }
+
     private fun setMenu() {
         setSupportActionBar(binding.toolbarCharts)
     }
@@ -57,9 +62,6 @@ class ChartsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         when(item.itemId) {
             R.id.action_settings -> return true
             R.id.action_edit -> {
@@ -74,18 +76,21 @@ class ChartsActivity : AppCompatActivity() {
     private fun setTitle() {
         if (chartID == null)
             chartID = intent.getStringExtra(INTENT_CHART_ID)
-        getTitle(this, chartID).apply {
-            title = this
+
+        model.chartId = chartID
+        model.getChartTitle().observe(this) {
+            title = it
         }
     }
     //</editor-fold>
 
-    private fun loadChartFromFile(): Boolean {
-        val dataCsv = ExtIOData.readLinesFromFile(this, chartID?.let { getActualFilename(it) })
-        dataCsv?.let {
-            chartManager.setChartData(it)
+    private fun loadChartFromFile() {
+        model.getChartData().observe(this) { data ->
+            chartManager.setChartData(data)
+            if (chartManager.chartData.isNotEmpty())
+                prepareDataForChart()
+            binding.combinedChartLayout.invalidate()
         }
-        return chartManager.chartData.isNotEmpty()
     }
 
     //<editor-fold desc="Initial Chart Adjusting">
