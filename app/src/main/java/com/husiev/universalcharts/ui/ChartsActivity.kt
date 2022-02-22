@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
+import com.husiev.universalcharts.R
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.ChartsActivityViewModel
 
@@ -86,6 +88,7 @@ class ChartsActivity : AppCompatActivity() {
 
     private fun loadChartFromFile() {
         model.getChartData().observe(this) { data ->
+            Log.d("debug", "--------------------------------1")
             chartManager.setChartData(data)
             if (chartManager.chartData.isNotEmpty())
                 prepareDataForChart()

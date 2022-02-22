@@ -12,6 +12,7 @@ class ChartManager {
 
     fun setChartData(data: Array<Array<String>>?) {
         chartData.clear()
+        xAxisLabel.clear()
         data?.let {
             for (i in 0 until CHARTS_NUMBER) {
                 chartData.add(SimpleChart("data0$i"))
@@ -27,8 +28,8 @@ class ChartManager {
                         0f
                     }
                     chartData[j].data.add(PointF(x, y))
-                    xAxisLabel.add(j.toString())
                 }
+                xAxisLabel.add((i+1).toString())
             }
         }
     }
