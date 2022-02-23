@@ -23,7 +23,7 @@ class ExternalStorageOperations {
          * @param data saving data.
          * @param append set to true to append data to a file, or set to false to replace all data.
          */
-        fun saveDataToFile(rootDirectory: File, filename: String, data: ByteArray, append: Boolean) {
+        fun saveDataToFile(rootDirectory: File, filename: String, data: ByteArray, append: Boolean): Boolean {
             val file = File(rootDirectory, filename)
             try {
                 val fileOutputStream = FileOutputStream(file, append)
@@ -31,7 +31,9 @@ class ExternalStorageOperations {
                 fileOutputStream.close()
             } catch (ex: IOException) {
                 Log.w("ExternalStorage", "Error writing $file", ex)
+                return false
             }
+            return true
         }
 
         /**

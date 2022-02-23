@@ -1,10 +1,7 @@
 package com.husiev.universalcharts.charts
 
 import android.graphics.PointF
-import android.util.Log
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
-import com.husiev.universalcharts.utils.CSV_CELL_SEPARATOR
-import java.lang.Exception
 
 class ChartManager {
     val chartData = mutableListOf<SimpleChart>()
@@ -31,6 +28,7 @@ class ChartManager {
                 }
                 xAxisLabel.add((i+1).toString())
             }
+            xAxisLabel.add("workaround issue")
         }
     }
 }

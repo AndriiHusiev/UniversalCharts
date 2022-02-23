@@ -14,7 +14,7 @@ class DataRepository(context: Context) {
 
     var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
 
-    fun saveChartData(chartId: String?, data: Array<Array<String>>) {
+    fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
         if (chartId != null) {
             val filename = getActualFilename(chartId)
             var dataCsv = ""
@@ -23,8 +23,9 @@ class DataRepository(context: Context) {
                     dataCsv += "${data[i][j]}$CSV_CELL_SEPARATOR"
                 dataCsv += NEW_LINE
             }
-            saveData(filename, dataCsv.toByteArray())
+            return saveData(filename, dataCsv.toByteArray())
         }
+        return false
     }
 
     private fun getLinesFromFile(filename: String): List<String>? {
@@ -66,10 +67,11 @@ class DataRepository(context: Context) {
         }
     }
 
-    private fun saveData(filename: String, data: ByteArray, append: Boolean = false) {
+    private fun saveData(filename: String, data: ByteArray, append: Boolean = false): Boolean {
         if (rootDirectory != null) {
-            saveDataToFile(rootDirectory, filename, data, append)
+            return saveDataToFile(rootDirectory, filename, data, append)
         }
+        return false
     }
 
     private fun prepareDataToSaving(chartName: String): String {
@@ -87,16 +89,16 @@ class DataRepository(context: Context) {
         }
     }
 
-    fun getChartData(chartId: String?): Array<Array<String>>? {
+    fun getChartData(chartId: String?): Array<Array<String>> {
         if (chartId == null)
-            return null
+            return emptyArray()
         val filename = getActualFilename(chartId)
         val lines = getLinesFromFile(filename)
         return convertCsvToStringMatrix(lines)
     }
 
-    private fun convertCsvToStringMatrix(data: List<String>?): Array<Array<String>>? {
-        if (data == null) return null
+    private fun convertCsvToStringMatrix(data: List<String>?): Array<Array<String>> {
+        if (data == null) return emptyArray()
 
         var chartData = arrayOf<Array<String>>()
 
@@ -119,7 +121,7 @@ class DataRepository(context: Context) {
             return chartData
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            return null
+            return emptyArray()
         }
     }
 

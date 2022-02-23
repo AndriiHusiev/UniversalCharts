@@ -88,7 +88,6 @@ class ChartsActivity : AppCompatActivity() {
 
     private fun loadChartFromFile() {
         model.getChartData().observe(this) { data ->
-            Log.d("debug", "--------------------------------1")
             chartManager.setChartData(data)
             if (chartManager.chartData.isNotEmpty())
                 prepareDataForChart()
