@@ -45,7 +45,6 @@ class ChartManager {
                 }
                 xAxisLabel.add((i+1).toString())
             }
-            xAxisLabel.add("workaround issue")
         }
     }
 

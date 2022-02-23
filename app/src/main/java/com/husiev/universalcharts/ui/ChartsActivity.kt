@@ -34,7 +34,15 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadChartFromFile()
+
+        model.getChartData().observe(this) { data ->
+            chartManager.setChartData(data)
+            if (chartManager.chartData.isNotEmpty()){
+                binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabel)
+                binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
+            }
+            binding.combinedChartLayout.invalidate()
+        }
     }
 
     //<editor-fold desc="Common Initialization">
@@ -75,19 +83,5 @@ class ChartsActivity : AppCompatActivity() {
 
     private fun initialChartAdjusting() { chartManager.initialChartAdjusting(binding.combinedChartLayout, this) }
     //</editor-fold>
-
-    private fun loadChartFromFile() {
-        model.getChartData().observe(this) { data ->
-            chartManager.setChartData(data)
-            if (chartManager.chartData.isNotEmpty())
-                prepareDataForChart()
-            binding.combinedChartLayout.invalidate()
-        }
-    }
-
-    private fun prepareDataForChart() {
-        binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabel)
-        binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
-    }
 
 }
