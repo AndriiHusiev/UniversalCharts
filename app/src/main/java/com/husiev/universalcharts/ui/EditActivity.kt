@@ -43,7 +43,7 @@ class EditActivity : AppCompatActivity() {
         super.onResume()
 
         if (customTable.isEmpty() ) {
-            model.loadChartDataFromFile(this).observe(this) {
+            model.loadChartDataFromFile().observe(this) {
                 fillTable(it)
             }
         }

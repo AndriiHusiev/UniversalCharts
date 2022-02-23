@@ -28,13 +28,6 @@ class DataRepository(context: Context) {
         return false
     }
 
-    private fun getLinesFromFile(filename: String): List<String>? {
-        return if (rootDirectory != null)
-            readLinesFromFile(rootDirectory, filename)
-        else
-            null
-    }
-
     fun getChartTitle(chartId: String?): String {
         var title = ""
         try {
@@ -61,26 +54,6 @@ class DataRepository(context: Context) {
         return dirName
     }
 
-    private fun createDirectory(pathname: String) {
-        if (rootDirectory != null) {
-            createDirectory(rootDirectory, pathname)
-        }
-    }
-
-    private fun saveData(filename: String, data: ByteArray, append: Boolean = false): Boolean {
-        if (rootDirectory != null) {
-            return saveDataToFile(rootDirectory, filename, data, append)
-        }
-        return false
-    }
-
-    private fun prepareDataToSaving(chartName: String): String {
-        val data: StringBuilder = StringBuilder()
-        data.append("Title").append(CSV_CELL_SEPARATOR).append(NEW_LINE)
-            .append(chartName).append(CSV_CELL_SEPARATOR).append(NEW_LINE)
-        return data.toString()
-    }
-
     fun deleteChart(id: String?) {
         id?.let {
             if (rootDirectory != null) {
@@ -95,6 +68,33 @@ class DataRepository(context: Context) {
         val filename = getActualFilename(chartId)
         val lines = getLinesFromFile(filename)
         return convertCsvToStringMatrix(lines)
+    }
+
+    private fun getLinesFromFile(filename: String): List<String>? {
+        return if (rootDirectory != null)
+            readLinesFromFile(rootDirectory, filename)
+        else
+            null
+    }
+
+    private fun saveData(filename: String, data: ByteArray, append: Boolean = false): Boolean {
+        if (rootDirectory != null) {
+            return saveDataToFile(rootDirectory, filename, data, append)
+        }
+        return false
+    }
+
+    private fun createDirectory(pathname: String) {
+        if (rootDirectory != null) {
+            createDirectory(rootDirectory, pathname)
+        }
+    }
+
+    private fun prepareDataToSaving(chartName: String): String {
+        val data: StringBuilder = StringBuilder()
+        data.append("Title").append(CSV_CELL_SEPARATOR).append(NEW_LINE)
+            .append(chartName).append(CSV_CELL_SEPARATOR).append(NEW_LINE)
+        return data.toString()
     }
 
     private fun convertCsvToStringMatrix(data: List<String>?): Array<Array<String>> {

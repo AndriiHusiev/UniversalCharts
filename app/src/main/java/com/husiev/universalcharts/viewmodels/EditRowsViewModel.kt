@@ -1,7 +1,6 @@
 package com.husiev.universalcharts.viewmodels
 
 import android.app.Application
-import android.content.Context
 import android.graphics.Point
 import androidx.lifecycle.*
 import com.husiev.universalcharts.DataRepository
@@ -18,7 +17,7 @@ class EditRowsViewModel(application: Application) : AndroidViewModel(application
                 field = value
         }
 
-    fun loadChartDataFromFile(context: Context): LiveData<Array<Array<String>>> {
+    fun loadChartDataFromFile(): LiveData<Array<Array<String>>> {
         val liveChartData = MutableLiveData<Array<Array<String>>>()
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -50,12 +49,6 @@ class EditRowsViewModel(application: Application) : AndroidViewModel(application
                 liveChartData.postValue(remainingData)
         }
         return liveChartData
-    }
-
-    fun saveChartData(data: Array<Array<String>>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.saveChartData(chartId, data)
-        }
     }
 
     fun editCell(value: String, position: Point): LiveData<Array<Array<String>>> {
