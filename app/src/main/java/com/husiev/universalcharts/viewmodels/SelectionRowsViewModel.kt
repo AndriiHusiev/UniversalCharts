@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.husiev.universalcharts.UChartApplication
 import com.husiev.universalcharts.DataRepository
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.ui.ChartsActivity
 import com.husiev.universalcharts.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -21,34 +22,19 @@ import kotlinx.coroutines.launch
 class SelectionRowsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: DataRepository = (application as UChartApplication).repository
 
-    fun setTable(context: Context): LiveData<List<TableRow>> {
-        val tableRows = MutableLiveData<List<TableRow>>()
+    fun setTable(): LiveData<List<ChartsEntity>> {
+        val chartList = MutableLiveData<List<ChartsEntity>>()
         viewModelScope.launch(Dispatchers.IO) {
-            val rows = mutableListOf<TableRow>()
+            val chart = mutableListOf<ChartsEntity>()
             val chartID = repository.listOfDirectories
             if (chartID != null && chartID.isNotEmpty()) {
                 for (i in 0..chartID.lastIndex) {
-                    rows.add(addRow(context, repository.getChartTitle(chartID[i]), chartID[i]))
+                    chart.add(ChartsEntity(chartID[i], repository.getChartTitle(chartID[i])))
                 }
-                tableRows.postValue(rows)
+                chartList.postValue(chart)
             }
         }
-        return tableRows
-    }
-
-    fun addRow(context: Context, title: String, id: String) : TableRow {
-        return TableRow(context).apply {
-            layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setPadding(0, 0, 0, 0)
-            addView(SelectionTableRowChartInfo(context).apply { setTitle(title) })
-            tag = id
-            setBackgroundResource(R.drawable.selector_tablerow_highlighter)
-            setOnClickListener {
-                val intent = Intent(context, ChartsActivity().javaClass)
-                intent.putExtra(INTENT_CHART_ID, id)
-                context.startActivity(intent)
-            }
-        }
+        return chartList
     }
 
     fun createNewChart(chartTitle: String): LiveData<String> {

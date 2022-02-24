@@ -5,6 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "charts")
 class ChartsEntity (
-    @PrimaryKey val uid: Int,
+    @PrimaryKey val uid: String,
     val title: String
 )

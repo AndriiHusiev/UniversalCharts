@@ -10,7 +10,7 @@ interface ChartsDao {
     fun loadChartsList(): LiveData<List<ChartsEntity>>
 
     @Query("SELECT * FROM charts where uid = :chartUid")
-    fun loadChart(chartUid: Int): LiveData<ChartsEntity>
+    fun loadChart(chartUid: String): LiveData<ChartsEntity>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(chart: ChartsEntity)
