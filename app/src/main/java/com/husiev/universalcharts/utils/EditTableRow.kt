@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Point
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemEditTableRowBinding
 
@@ -53,24 +52,23 @@ class EditTableRow(context: Context) : LinearLayout(context) {
         }
     }
 
-    fun getCell(index: Int): TextView? {
-        return when(index) {
-            0 -> binding.textChart01Point
-            1 -> binding.textChart02Point
-            2 -> binding.textChart03Point
-            3 -> binding.textChart04Point
-            4 -> binding.textChart05Point
-            else -> null
+    fun setCellClickListener(listener: OnClickListener, index: Int) {
+        when(index) {
+            0 -> binding.textChart01Point.setOnClickListener(listener)
+            1 -> binding.textChart02Point.setOnClickListener(listener)
+            2 -> binding.textChart03Point.setOnClickListener(listener)
+            3 -> binding.textChart04Point.setOnClickListener(listener)
+            4 -> binding.textChart05Point.setOnClickListener(listener)
         }
     }
 
-    fun getCellsAsArray(): Array<String> {
-        return with(binding) {
-            arrayOf(textChart01Point.text.toString(),
-                    textChart02Point.text.toString(),
-                    textChart03Point.text.toString(),
-                    textChart04Point.text.toString(),
-                    textChart05Point.text.toString())
+    fun setCellLongClickListener(listener: OnLongClickListener, index: Int) {
+        when(index) {
+            0 -> binding.textChart01Point.setOnLongClickListener(listener)
+            1 -> binding.textChart02Point.setOnLongClickListener(listener)
+            2 -> binding.textChart03Point.setOnLongClickListener(listener)
+            3 -> binding.textChart04Point.setOnLongClickListener(listener)
+            4 -> binding.textChart05Point.setOnLongClickListener(listener)
         }
     }
 }

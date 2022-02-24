@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.InputType.*
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -102,21 +103,6 @@ class EditActivity : AppCompatActivity() {
     private fun setViewModel() {
         model = ViewModelProvider(this)[EditRowsViewModel::class.java]
     }
-
-    private fun setListeners(row: EditTableRow, rowIndex: Int) {
-        for (i in 0 until CHARTS_NUMBER) {
-            row.getCell(i)?.setOnClickListener {
-                tagCell = tagOfEditTableCell(rowIndex, i)
-                editTextForDialog.setText("")
-                newValueDialog.show()
-            }
-            row.getCell(i)?.setOnLongClickListener {
-                tagCell = tagOfEditTableCell(rowIndex, i)
-                removeValueDialog.show()
-                return@setOnLongClickListener true
-            }
-        }
-    }
     //</editor-fold>
 
     //<editor-fold desc="Edit Table">
@@ -136,10 +122,27 @@ class EditActivity : AppCompatActivity() {
             val data: Array<String> = cells ?: arrayOf("", "", "", "", "")
             for (i in data.indices) {
                 this.setCell(i, data[i])
+                this.setCellClickListener(setClickListener(rowIndex, i), i)
+                this.setCellLongClickListener(setLongClickListener(rowIndex, i), i)
             }
         }
-        setListeners(row, index)
         return row
+    }
+
+    private fun setClickListener(rowIndex: Int, cellIndex: Int): View.OnClickListener {
+        return View.OnClickListener {
+            tagCell = tagOfEditTableCell(rowIndex, cellIndex)
+            editTextForDialog.setText("")
+            newValueDialog.show()
+        }
+    }
+
+    private fun setLongClickListener(rowIndex: Int, cellIndex: Int): View.OnLongClickListener {
+        return View.OnLongClickListener {
+            tagCell = tagOfEditTableCell(rowIndex, cellIndex)
+            removeValueDialog.show()
+            return@OnLongClickListener true
+        }
     }
 
     private fun addLastRow() {
