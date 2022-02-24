@@ -1,6 +1,9 @@
 package com.husiev.universalcharts
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import com.husiev.universalcharts.db.AppDatabase
+import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
@@ -9,10 +12,16 @@ import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.read
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
 import java.util.*
 
-class DataRepository(context: Context) {
+class DataRepository(context: Context, db: AppDatabase) {
     private val rootDirectory = context.getExternalFilesDir(null)
+    private val database = db
 
     var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
+    var listOfCharts: LiveData<List<ChartsEntity>> = database.chartsDao().loadChartsList()
+
+    suspend fun insert(chart: ChartsEntity) {
+        database.chartsDao().insert(chart)
+    }
 
     fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
         if (chartId != null) {
@@ -129,9 +138,9 @@ class DataRepository(context: Context) {
         @Volatile
         private var INSTANCE: DataRepository? = null
 
-        fun getInstance(context: Context): DataRepository {
+        fun getInstance(context: Context, db: AppDatabase): DataRepository {
             return INSTANCE ?: synchronized(this) {
-                val instance = DataRepository(context)
+                val instance = DataRepository(context, db)
                 INSTANCE = instance
                 instance
             }
