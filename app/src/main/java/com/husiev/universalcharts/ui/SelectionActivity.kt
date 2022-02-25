@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityMainBinding
+import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.utils.INTENT_CHART_ID
 import com.husiev.universalcharts.utils.SelectionTableRowChartInfo
+import com.husiev.universalcharts.utils.logDebugOut
 import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel
 
 class SelectionActivity : AppCompatActivity() {
@@ -38,11 +40,11 @@ class SelectionActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.tableAllCharts.let { table ->
-            table.removeAllViews()
-
-            model.setTable().observe(this) { chartList ->
-                for (i in 0..chartList.lastIndex) {
-                    table.addView(addRow(this, chartList[i].title, chartList[i].uid))
+            model.allCharts.observe(this) { charts ->
+                table.removeAllViews()
+                logDebugOut("SelectionActivity", "onResume", "observe")
+                for (i in 0..charts.lastIndex) {
+                    table.addView(addRow(this, charts[i]))
                 }
             }
         }
@@ -70,24 +72,42 @@ class SelectionActivity : AppCompatActivity() {
         }
     }
 
-    private fun addRow(context: Context, title: String, id: String) : TableRow {
+    private fun addRow(context: Context, chart: ChartsEntity) : TableRow {
         return TableRow(context).apply {
             layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             setPadding(0, 0, 0, 0)
-            addView(SelectionTableRowChartInfo(context).apply { setTitle(title) })
-            tag = id
+            addView(SelectionTableRowChartInfo(context, chart))
+            tag = chart.uid
             setBackgroundResource(R.drawable.selector_tablerow_highlighter)
             setOnClickListener {
                 val intent = Intent(context, ChartsActivity().javaClass)
-                intent.putExtra(INTENT_CHART_ID, id)
+                intent.putExtra(INTENT_CHART_ID, chart.uid)
                 context.startActivity(intent)
             }
             setOnLongClickListener {
-                binding.tableAllCharts.tag = id
+                binding.tableAllCharts.tag = chart.uid
                 removeChartDialog.show()
                 return@setOnLongClickListener true
             }
         }
+    }
+
+    private fun setNewChartDialog() {
+        val title = resources.getString(R.string.alert_dialog_header_choose_chart_name)
+        val editText = EditText(this)
+
+        val dialog = AlertDialog.Builder(this).apply {
+            setTitle(title)
+            setView(editText)
+            setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
+                val chartTitle = editText.text.toString()
+                if (chartTitle != "") {
+                    model.createNewChart(chartTitle)
+                }
+            }
+            setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
+        }
+        newChartDialog = dialog.create()
     }
 
     private fun setRemoveChartDialog() {
@@ -100,37 +120,9 @@ class SelectionActivity : AppCompatActivity() {
             setCancelable(true)
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
                 model.deleteChart(binding.tableAllCharts.tag as String?)
-                binding.tableAllCharts.removeAllViews()
-                model.setTable().observe(this@SelectionActivity) { chartList ->
-                    for (i in 0..chartList.lastIndex) {
-                        binding.tableAllCharts.addView(addRow(this@SelectionActivity, chartList[i].title, chartList[i].uid))
-                    }
-                }
-            }
-    setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
-        }
-        removeChartDialog = dialog.create()
-    }
-
-    //<editor-fold desc="NewChart Dialog">
-    private fun setNewChartDialog() {
-        val title = resources.getString(R.string.alert_dialog_header_choose_chart_name)
-        val editText = EditText(this)
-
-        val dialog = AlertDialog.Builder(this).apply {
-            setTitle(title)
-            setView(editText)
-            setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
-                val chartTitle = editText.text.toString()
-                if (chartTitle != "") {
-                    model.createNewChart(chartTitle).observe(this@SelectionActivity) { chartId ->
-                        binding.tableAllCharts.addView(addRow(this@SelectionActivity, chartTitle, chartId))
-                    }
-                }
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
         }
-        newChartDialog = dialog.create()
+        removeChartDialog = dialog.create()
     }
-    //</editor-fold>
 }

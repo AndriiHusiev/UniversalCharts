@@ -7,7 +7,6 @@ import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
-import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.getListOfDirs
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
 import java.util.*
@@ -16,11 +15,21 @@ class DataRepository(context: Context, db: AppDatabase) {
     private val rootDirectory = context.getExternalFilesDir(null)
     private val database = db
 
-    var listOfDirectories = rootDirectory?.let { getListOfDirs(it, "") }
     var listOfCharts: LiveData<List<ChartsEntity>> = database.chartsDao().loadChartsList()
 
-    suspend fun insert(chart: ChartsEntity) {
-        database.chartsDao().insert(chart)
+    suspend fun insertChart(chartTitle: String) {
+        val chartUid = createChartOnFilesystem(chartTitle)
+        val entity = ChartsEntity(chartUid, chartTitle)
+        database.chartsDao().insert(entity)
+    }
+
+    suspend fun deleteChart(id: String?) {
+        id?.let {
+            val title = getChartTitle(id)
+            val entity = ChartsEntity(id, title)
+            database.chartsDao().delete(entity)
+            deleteChartOnFilesystem(id)
+        }
     }
 
     fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
@@ -53,7 +62,22 @@ class DataRepository(context: Context, db: AppDatabase) {
         return title
     }
 
-    fun createNewChart(chartTitle: String): String {
+    fun getChartData(chartId: String?): Array<Array<String>> {
+        if (chartId == null)
+            return emptyArray()
+        val filename = getActualFilename(chartId)
+        val lines = getLinesFromFile(filename)
+        return convertCsvToStringMatrix(lines)
+    }
+
+    //<editor-fold desc="File Operations in Private Storage">
+    private fun deleteChartOnFilesystem(id: String) {
+        if (rootDirectory != null) {
+            deleteDirectory(rootDirectory, id)
+        }
+    }
+
+    private fun createChartOnFilesystem(chartTitle: String): String {
         // Actual timestamp is used as directory name
         val dirName = Date().time.toString()
         // Create directory with specified name
@@ -61,22 +85,6 @@ class DataRepository(context: Context, db: AppDatabase) {
         val path = "$dirName/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
         saveData(path, prepareDataToSaving(chartTitle).toByteArray())
         return dirName
-    }
-
-    fun deleteChart(id: String?) {
-        id?.let {
-            if (rootDirectory != null) {
-                deleteDirectory(rootDirectory, id)
-            }
-        }
-    }
-
-    fun getChartData(chartId: String?): Array<Array<String>> {
-        if (chartId == null)
-            return emptyArray()
-        val filename = getActualFilename(chartId)
-        val lines = getLinesFromFile(filename)
-        return convertCsvToStringMatrix(lines)
     }
 
     private fun getLinesFromFile(filename: String): List<String>? {
@@ -133,6 +141,7 @@ class DataRepository(context: Context, db: AppDatabase) {
             return emptyArray()
         }
     }
+    //</editor-fold>
 
     companion object {
         @Volatile

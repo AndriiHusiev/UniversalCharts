@@ -5,8 +5,16 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemListOfChartsBinding
+import com.husiev.universalcharts.db.entity.ChartsEntity
 
 class SelectionTableRowChartInfo(context: Context) : RelativeLayout(context) {
+    constructor(context: Context, data: ChartsEntity): this(context) {
+        _data = data
+        binding.textChartTitle.text = _data.title
+        logDebugOut("SelectionTableRowChartInfo", "_data.title", _data.title)
+    }
+
+    private var _data: ChartsEntity = ChartsEntity("","")
     private var binding: ItemListOfChartsBinding
 
     init {
@@ -17,10 +25,12 @@ class SelectionTableRowChartInfo(context: Context) : RelativeLayout(context) {
             true
         ) as RelativeLayout
         binding = ItemListOfChartsBinding.bind(relativeLayout)
-        binding.textChartTitle.text = ""
     }
+
+    val data get() = _data
 
     fun setTitle(title: String) {
         binding.textChartTitle.text = title
+        _data.title = title
     }
 }

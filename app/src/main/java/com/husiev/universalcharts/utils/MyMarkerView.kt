@@ -9,7 +9,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.husiev.universalcharts.R
 
 class MyMarkerView: MarkerView {
-    constructor(context: Context) : this(context, 0)
+    constructor(context: Context) : super(context, 0)
     constructor(context: Context, defStyleAttr: Int) : super(context, defStyleAttr)
 
     private var tvContent: TextView? = null
