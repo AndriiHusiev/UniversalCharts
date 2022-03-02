@@ -7,8 +7,11 @@ import com.husiev.universalcharts.db.entity.SimpleChartData
 
 @Dao
 interface ChartDataDao {
-    @Query("SELECT * FROM chart_data where chart_uid = :chartUid")
-    fun loadData(chartUid: Int): LiveData<List<SimpleChartData?>>
+    @Query("SELECT * FROM chart_data WHERE chart_uid = :chartUid")
+    fun loadData(chartUid: String): LiveData<List<ChartDataEntity>>
+
+    @Query("SELECT * FROM chart_data")
+    fun loadAllData(): LiveData<List<ChartDataEntity>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(chart: ChartDataEntity)

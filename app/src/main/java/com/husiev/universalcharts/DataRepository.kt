@@ -3,7 +3,9 @@ package com.husiev.universalcharts
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.husiev.universalcharts.db.AppDatabase
+import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.db.entity.ChartsEntity
+import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
@@ -15,6 +17,7 @@ class DataRepository(context: Context, db: AppDatabase) {
     private val rootDirectory = context.getExternalFilesDir(null)
     private val database = db
 
+    //<editor-fold desc="SelectionActivity">
     var listOfCharts: LiveData<List<ChartsEntity>> = database.chartsDao().loadChartsList()
 
     suspend fun insertChart(chartTitle: String) {
@@ -31,20 +34,25 @@ class DataRepository(context: Context, db: AppDatabase) {
             deleteChartOnFilesystem(id)
         }
     }
+    //</editor-fold>
 
-    fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
-        if (chartId != null) {
-            val filename = getActualFilename(chartId)
-            var dataCsv = ""
-            for (i in data.indices) {
-                for (j in data[i].indices)
-                    dataCsv += "${data[i][j]}$CSV_CELL_SEPARATOR"
-                dataCsv += NEW_LINE
-            }
-            return saveData(filename, dataCsv.toByteArray())
-        }
-        return false
+    //<editor-fold desc="EditActivity">
+    fun loadListOfChartData(id: String) = database.chartsDataDao().loadData(id)
+
+    suspend fun insertNewRowTo(chartId: String) {
+        val data = SimpleChartData()
+        val row = ChartDataEntity(chartId, data)
+        database.chartsDataDao().insert(row)
     }
+
+    suspend fun deleteLastRowOf(row: ChartDataEntity) {
+        database.chartsDataDao().delete(row)
+    }
+
+    suspend fun updateRow(row: ChartDataEntity) {
+        database.chartsDataDao().update(row)
+    }
+    //</editor-fold>
 
     fun getChartTitle(chartId: String?): String {
         var title = ""
@@ -71,6 +79,20 @@ class DataRepository(context: Context, db: AppDatabase) {
     }
 
     //<editor-fold desc="File Operations in Private Storage">
+    fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
+        if (chartId != null) {
+            val filename = getActualFilename(chartId)
+            var dataCsv = ""
+            for (i in data.indices) {
+                for (j in data[i].indices)
+                    dataCsv += "${data[i][j]}$CSV_CELL_SEPARATOR"
+                dataCsv += NEW_LINE
+            }
+            return saveData(filename, dataCsv.toByteArray())
+        }
+        return false
+    }
+
     private fun deleteChartOnFilesystem(id: String) {
         if (rootDirectory != null) {
             deleteDirectory(rootDirectory, id)

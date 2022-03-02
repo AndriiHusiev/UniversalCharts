@@ -1,63 +1,36 @@
 package com.husiev.universalcharts.viewmodels
 
 import android.app.Application
-import android.graphics.Point
 import androidx.lifecycle.*
 import com.husiev.universalcharts.DataRepository
 import com.husiev.universalcharts.UChartApplication
+import com.husiev.universalcharts.db.entity.ChartDataEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class EditRowsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: DataRepository = (application as UChartApplication).repository
-    private var chartData: Array<Array<String>> = emptyArray()
-    var chartId: String? = null
-        set(value) {
-            if (value != null)
-                field = value
-        }
+    var chartId: String = ""
 
-    fun loadChartDataFromFile(): LiveData<Array<Array<String>>> {
-        val liveChartData = MutableLiveData<Array<Array<String>>>()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            chartData = repository.getChartData(chartId)
-            liveChartData.postValue(repository.getChartData(chartId))
-        }
-        return liveChartData
+    fun loadListOfChartData(): LiveData<List<ChartDataEntity>> {
+        return repository.loadListOfChartData(chartId)
     }
 
-    fun addRowInLastPosition(): LiveData<Array<Array<String>>> {
-        val liveChartData = MutableLiveData<Array<Array<String>>>()
+    fun addRowInLastPosition() {
         viewModelScope.launch(Dispatchers.IO) {
-            chartData += arrayOf("", "", "", "", "")
-            if (repository.saveChartData(chartId, chartData))
-                liveChartData.postValue(chartData)
+            repository.insertNewRowTo(chartId)
         }
-        return liveChartData
     }
 
-    fun deleteLastRow(): LiveData<Array<Array<String>>> {
-        val liveChartData = MutableLiveData<Array<Array<String>>>()
-        var remainingData = arrayOf<Array<String>>()
+    fun deleteLastRow(row: ChartDataEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            for (i in 0 until  chartData.lastIndex) {
-                remainingData += chartData[i]
-            }
-            chartData = remainingData
-            if (repository.saveChartData(chartId, remainingData))
-                liveChartData.postValue(remainingData)
+            repository.deleteLastRowOf(row)
         }
-        return liveChartData
     }
 
-    fun editCell(value: String, position: Point): LiveData<Array<Array<String>>> {
-        val liveChartData = MutableLiveData<Array<Array<String>>>()
+    fun editCell(row: ChartDataEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            chartData[position.y][position.x] = value
-            repository.saveChartData(chartId, chartData)
-            liveChartData.postValue(chartData)
+            repository.updateRow(row)
         }
-        return liveChartData
     }
 }
