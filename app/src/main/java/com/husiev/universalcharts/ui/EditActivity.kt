@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
+import com.husiev.universalcharts.db.entity.ChartDataEntity
+import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.EditRowsViewModel
 
@@ -22,7 +24,6 @@ class EditActivity : AppCompatActivity() {
     private lateinit var newValueDialog: AlertDialog
     private lateinit var removeValueDialog: AlertDialog
     private lateinit var editTextForDialog: EditText
-    private var chartID: String? = null
     private var tagCell: String = ""
     private var customTable = mutableListOf<EditTableRow>()
 
@@ -38,16 +39,7 @@ class EditActivity : AppCompatActivity() {
         initActivityItems()
         setNewValueDialog()
         setRemoveValueDialog()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (customTable.isEmpty() ) {
-            model.loadChartDataFromFile().observe(this) {
-                fillTable(it)
-            }
-        }
+        setObserver()
     }
 
     //<editor-fold desc="Menu">
@@ -72,13 +64,12 @@ class EditActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.action_add_row -> {
-                addLastRow()
+                model.addRowInLastPosition()
             }
             R.id.action_delete_row -> {
-                with(binding.tableEditChartData) {
-                    if (childCount > 0) {
-                        deleteLastRow()
-                    }
+                if (binding.tableEditChartData.childCount > 0) {
+                    val row = fillEntity(customTable.last())
+                    model.deleteLastRow(row)
                 }
             }
         }
@@ -88,8 +79,10 @@ class EditActivity : AppCompatActivity() {
 
     //<editor-fold desc="Initialization">
     private fun getIntentData() {
-        chartID = intent.getStringExtra("chartID")
-        model.chartId = chartID
+        intent.getStringExtra(INTENT_CHART_ID)?.let {
+            model.chartId = it
+        }
+        logDebugOut("EditActivity", "getIntentData chartId", model.chartId)
     }
 
     private fun initActivityItems() {
@@ -103,25 +96,34 @@ class EditActivity : AppCompatActivity() {
     private fun setViewModel() {
         model = ViewModelProvider(this)[EditRowsViewModel::class.java]
     }
+
+    private fun setObserver() {
+        model.loadListOfChartData().observe(this) { data ->
+            fillCustomTable(data)
+            fillTable()
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="Edit Table">
-    private fun fillTable(data: Array<Array<String>>?) {
-        binding.tableEditChartData.removeAllViews()
+    private fun fillCustomTable(chartData: List<ChartDataEntity>) {
         customTable.clear()
-        if (data != null)
-            for (i in data.indices) {
-                customTable.add(addRow(i, data[i]))
-                binding.tableEditChartData.addView(customTable[i])
-            }
+        for (i in chartData.indices) {
+            customTable.add(addRow(i, chartData[i]))
+        }
     }
 
-    private fun addRow(index: Int, cells: Array<String>?) : EditTableRow {
-        val row = EditTableRow(this).apply {
+    private fun fillTable() {
+        binding.tableEditChartData.removeAllViews()
+        customTable.forEach {
+            binding.tableEditChartData.addView(it)
+        }
+    }
+
+    private fun addRow(index: Int, entity: ChartDataEntity) : EditTableRow {
+        val row = EditTableRow(this, entity).apply {
             rowIndex = index
-            val data: Array<String> = cells ?: arrayOf("", "", "", "", "")
-            for (i in data.indices) {
-                this.setCell(i, data[i])
+            for (i in 0 until CHARTS_NUMBER) {
                 this.setCellClickListener(setClickListener(rowIndex, i), i)
                 this.setCellLongClickListener(setLongClickListener(rowIndex, i), i)
             }
@@ -145,27 +147,24 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
-    private fun addLastRow() {
-        model.addRowInLastPosition().observe(this) {
-            if (it != null) {
-                val index = it.lastIndex
-                val row = addRow(index, it[index])
-                customTable.add(row)
-                binding.tableEditChartData.addView(row)
-            }
-        }
-    }
-
-    private fun deleteLastRow() {
-        model.deleteLastRow().observe(this) {
-            fillTable(it)
-        }
-    }
-
     private fun editTable(value: String, position: Point) {
-        model.editCell(value, position).observe(this) {
-            // Может не стоит при мелких изменениях обновлять с нуля всю таблицу?
-            fillTable(it)
+        with(customTable[position.y]) {
+            this.setCell(position.x, value)
+            val row = fillEntity(this)
+            model.editCell(row)
+        }
+    }
+
+    private fun fillEntity(editTableRow: EditTableRow): ChartDataEntity {
+        with(editTableRow) {
+            val data = SimpleChartData(
+                this.getCell(0).toFloatOrNull(),
+                this.getCell(1).toFloatOrNull(),
+                this.getCell(2).toFloatOrNull(),
+                this.getCell(3).toFloatOrNull(),
+                this.getCell(4).toFloatOrNull()
+            )
+            return ChartDataEntity(rowId, model.chartId, data)
         }
     }
     //</editor-fold>
@@ -178,9 +177,10 @@ class EditActivity : AppCompatActivity() {
             setTitle(title)
             setView(editTextForDialog)
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
-                if (editTextForDialog.text.toString() != "") {
+                val newValue = editTextForDialog.text.toString()
+                if (newValue != "") {
                     val pos = getPointPosition(tagCell)
-                    editTable(editTextForDialog.text.toString(), pos)
+                    editTable(newValue, pos)
                 }
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }

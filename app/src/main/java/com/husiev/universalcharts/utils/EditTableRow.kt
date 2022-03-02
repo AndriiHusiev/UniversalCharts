@@ -4,11 +4,23 @@ import android.content.Context
 import android.graphics.Point
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemEditTableRowBinding
+import com.husiev.universalcharts.db.entity.ChartDataEntity
 
 class EditTableRow(context: Context) : LinearLayout(context) {
+    constructor(context: Context, dataEntity: ChartDataEntity): this(context) {
+        rowId = dataEntity.id
+        setCell(0, convert(dataEntity.data?.chartData1))
+        setCell(1, convert(dataEntity.data?.chartData2))
+        setCell(2, convert(dataEntity.data?.chartData3))
+        setCell(3, convert(dataEntity.data?.chartData4))
+        setCell(4, convert(dataEntity.data?.chartData5))
+    }
+
     private var binding: ItemEditTableRowBinding
+    var rowId: Int? = null
 
     init {
         val mInflater = LayoutInflater.from(context)
@@ -52,6 +64,17 @@ class EditTableRow(context: Context) : LinearLayout(context) {
         }
     }
 
+    fun getCell(index: Int): String {
+        return when(index) {
+            0 -> binding.textChart01Point.text.toString()
+            1 -> binding.textChart02Point.text.toString()
+            2 -> binding.textChart03Point.text.toString()
+            3 -> binding.textChart04Point.text.toString()
+            4 -> binding.textChart05Point.text.toString()
+            else -> ""
+        }
+    }
+
     fun setCellClickListener(listener: OnClickListener, index: Int) {
         when(index) {
             0 -> binding.textChart01Point.setOnClickListener(listener)
@@ -69,6 +92,12 @@ class EditTableRow(context: Context) : LinearLayout(context) {
             2 -> binding.textChart03Point.setOnLongClickListener(listener)
             3 -> binding.textChart04Point.setOnLongClickListener(listener)
             4 -> binding.textChart05Point.setOnLongClickListener(listener)
+        }
+    }
+
+    companion object {
+        private fun convert(f: Float?): String {
+            return f?.toString() ?: ""
         }
     }
 }
