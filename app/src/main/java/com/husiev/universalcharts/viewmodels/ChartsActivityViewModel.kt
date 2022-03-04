@@ -7,30 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.husiev.universalcharts.UChartApplication
 import com.husiev.universalcharts.DataRepository
+import com.husiev.universalcharts.db.entity.ChartWithData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChartsActivityViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: DataRepository = (application as UChartApplication).repository
-    var chartId: String? = null
-        set(value) {
-            if (value != null)
-                field = value
-        }
+    var chartId: String = ""
 
-    fun getChartTitle(): LiveData<String> {
-        val chartTitle = MutableLiveData<String>()
-        viewModelScope.launch(Dispatchers.IO) {
-            chartTitle.postValue(repository.getChartTitle(chartId))
-        }
-        return chartTitle
-    }
-
-    fun getChartData(): LiveData<Array<Array<String>>> {
-        val chartData = MutableLiveData<Array<Array<String>>>()
-        viewModelScope.launch(Dispatchers.IO) {
-            chartData.postValue(repository.getChartData(chartId))
-        }
-        return chartData
+    fun loadChartData(): LiveData<ChartWithData> {
+        return repository.loadChartWithData(chartId)
     }
 }

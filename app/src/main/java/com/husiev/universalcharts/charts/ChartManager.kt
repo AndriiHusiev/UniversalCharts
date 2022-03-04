@@ -14,38 +14,52 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
 import com.husiev.universalcharts.utils.MyMarkerView
+import com.husiev.universalcharts.utils.logDebugOut
 
 class ChartManager {
     private val chartColor = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.GRAY)
+    private val _chartData = mutableListOf<SimpleChart>()
+    private val _xAxisLabel = mutableListOf<String>()
 
-    val chartData = mutableListOf<SimpleChart>()
-    val xAxisLabel = mutableListOf<String>()
+    val isNotEmptyDataList: Boolean get() = _chartData.isNotEmpty()
+    val xAxisLabels: List<String> get() = _xAxisLabel
 
-    fun setChartData(data: Array<Array<String>>?) {
-        chartData.clear()
-        xAxisLabel.clear()
-        data?.let {
+    fun setChartData(data: List<ChartDataEntity>) {
+        _chartData.clear()
+        _xAxisLabel.clear()
+
+        if (data.isNotEmpty()) {
             for (i in 0 until CHARTS_NUMBER) {
-                chartData.add(SimpleChart("data0$i"))
+                _chartData.add(SimpleChart("data0$i"))
             }
-            for (i in it.indices) {
-                for (j in it[i].indices) {
-                    val x = i.toFloat()
-                    val y = if (it[i][j] != "") {
-                        chartData[j].skipCell += false
-                        it[i][j].toFloat()
-                    } else {
-                        chartData[j].skipCell += true
-                        0f
-                    }
-                    chartData[j].data.add(PointF(x, y))
+
+            for (i in data.indices) {
+                data[i].data?.let {
+                    setPointData(0, i, it.chartData1)
+                    setPointData(1, i, it.chartData2)
+                    setPointData(2, i, it.chartData3)
+                    setPointData(3, i, it.chartData4)
+                    setPointData(4, i, it.chartData5)
+                    _xAxisLabel.add((i+1).toString())
                 }
-                xAxisLabel.add((i+1).toString())
             }
         }
+    }
+
+    private fun setPointData(index: Int, xValue: Int, yValue: Float?) {
+        val x = xValue.toFloat()
+        val y =  if (yValue != null) {
+            _chartData[index].skipCell += false
+            yValue
+        } else {
+            _chartData[index].skipCell += true
+            0f
+        }
+        _chartData[index].data.add(PointF(x, y))
     }
 
     //<editor-fold desc="Initial Chart Adjusting">
@@ -108,14 +122,14 @@ class ChartManager {
     private fun getLineDataSet(index: Int): LineDataSet {
         val entries = mutableListOf<Entry>()
 
-        with(chartData[index]) {
+        with(_chartData[index]) {
             for (i in 0 until data.size) {
                 if (!skipCell[i])
                     entries.add(Entry(data[i].x, data[i].y))
             }
         }
 
-        return LineDataSet(entries, chartData[index].label).apply {
+        return LineDataSet(entries, _chartData[index].label).apply {
             color = chartColor[index]
             lineWidth = 2f
             valueTextColor = COLOR_TEXT_DARK

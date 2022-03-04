@@ -18,7 +18,6 @@ class ChartsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChartsBinding
     private lateinit var model: ChartsActivityViewModel
     private val chartManager = ChartManager()
-    private var chartID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +27,9 @@ class ChartsActivity : AppCompatActivity() {
 
         setViewModel()
         setMenu()
-        setTitle()
+        getIntentData()
         initialChartAdjusting()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        model.getChartData().observe(this) { data ->
-            chartManager.setChartData(data)
-            if (chartManager.chartData.isNotEmpty()){
-                binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabel)
-                binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
-            }
-            binding.combinedChartLayout.invalidate()
-        }
+        setObserver()
     }
 
     //<editor-fold desc="Common Initialization">
@@ -64,24 +51,35 @@ class ChartsActivity : AppCompatActivity() {
             R.id.action_settings -> return true
             R.id.action_edit -> {
                 val intent = Intent(this, EditActivity().javaClass)
-                intent.putExtra(INTENT_CHART_ID, chartID)
+                intent.putExtra(INTENT_CHART_ID, model.chartId)
                 startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun setTitle() {
-        if (chartID == null)
-            chartID = intent.getStringExtra(INTENT_CHART_ID)
-
-        model.chartId = chartID
-        model.getChartTitle().observe(this) {
-            title = it
+    private fun getIntentData() {
+        intent.getStringExtra(INTENT_CHART_ID)?.let {
+            model.chartId = it
         }
     }
 
-    private fun initialChartAdjusting() { chartManager.initialChartAdjusting(binding.combinedChartLayout, this) }
+    private fun initialChartAdjusting() {
+        chartManager.initialChartAdjusting(binding.combinedChartLayout, this)
+    }
+
+    private fun setObserver() {
+        model.loadChartData().observe(this) {
+            title = it.chart.title
+            logDebugOut("ChartsActivity", "setObserver ChartDataEntity size", "${it.data.size}")
+            chartManager.setChartData(it.data)
+            if (chartManager.isNotEmptyDataList){
+                binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabels)
+                binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
+            }
+            binding.combinedChartLayout.invalidate()
+        }
+    }
     //</editor-fold>
 
 }

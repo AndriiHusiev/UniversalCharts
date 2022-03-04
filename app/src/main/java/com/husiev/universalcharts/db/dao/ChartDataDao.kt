@@ -3,10 +3,14 @@ package com.husiev.universalcharts.db.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.husiev.universalcharts.db.entity.ChartDataEntity
-import com.husiev.universalcharts.db.entity.SimpleChartData
+import com.husiev.universalcharts.db.entity.ChartWithData
 
 @Dao
 interface ChartDataDao {
+    @Transaction
+    @Query("SELECT * FROM charts WHERE uid = :chartUid")
+    fun loadChartWithData(chartUid: String): LiveData<ChartWithData>
+
     @Query("SELECT * FROM chart_data WHERE chart_uid = :chartUid")
     fun loadData(chartUid: String): LiveData<List<ChartDataEntity>>
 

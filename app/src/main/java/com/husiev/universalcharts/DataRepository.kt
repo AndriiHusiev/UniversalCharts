@@ -36,6 +36,10 @@ class DataRepository(context: Context, db: AppDatabase) {
     }
     //</editor-fold>
 
+    //<editor-fold desc="ChartsActivity">
+    fun loadChartWithData(id: String) = database.chartsDataDao().loadChartWithData(id)
+    //</editor-fold>
+
     //<editor-fold desc="EditActivity">
     fun loadListOfChartData(id: String) = database.chartsDataDao().loadData(id)
 
@@ -54,6 +58,7 @@ class DataRepository(context: Context, db: AppDatabase) {
     }
     //</editor-fold>
 
+    //<editor-fold desc="File Operations in Private Storage">
     fun getChartTitle(chartId: String?): String {
         var title = ""
         try {
@@ -78,7 +83,6 @@ class DataRepository(context: Context, db: AppDatabase) {
         return convertCsvToStringMatrix(lines)
     }
 
-    //<editor-fold desc="File Operations in Private Storage">
     fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
         if (chartId != null) {
             val filename = getActualFilename(chartId)
