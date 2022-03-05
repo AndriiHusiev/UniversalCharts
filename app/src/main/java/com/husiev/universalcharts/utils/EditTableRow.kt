@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Point
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemEditTableRowBinding
 import com.husiev.universalcharts.db.entity.ChartDataEntity
@@ -96,7 +95,7 @@ class EditTableRow(context: Context) : LinearLayout(context) {
     }
 
     companion object {
-        private fun convert(f: Float?): String {
+        fun convert(f: Float?): String {
             return f?.toString() ?: ""
         }
     }

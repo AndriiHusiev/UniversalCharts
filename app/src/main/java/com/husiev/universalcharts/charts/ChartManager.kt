@@ -15,18 +15,20 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.db.entity.ChartDataEntity
+import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
 import com.husiev.universalcharts.utils.MyMarkerView
-import com.husiev.universalcharts.utils.logDebugOut
 
 class ChartManager {
     private val chartColor = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.GRAY)
     private val _chartData = mutableListOf<SimpleChart>()
     private val _xAxisLabel = mutableListOf<String>()
+    private val _dataForExport = mutableListOf<SimpleChartData>()
 
     val isNotEmptyDataList: Boolean get() = _chartData.isNotEmpty()
     val xAxisLabels: List<String> get() = _xAxisLabel
+    val dataForExport: List<SimpleChartData> get() = _dataForExport
 
     fun setChartData(data: List<ChartDataEntity>) {
         _chartData.clear()
@@ -45,6 +47,7 @@ class ChartManager {
                     setPointData(3, i, it.chartData4)
                     setPointData(4, i, it.chartData5)
                     _xAxisLabel.add((i+1).toString())
+                    _dataForExport += it
                 }
             }
         }

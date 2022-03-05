@@ -7,6 +7,7 @@ import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
+import com.husiev.universalcharts.utils.EditTableRow.Companion.convert
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
@@ -38,6 +39,14 @@ class DataRepository(context: Context, db: AppDatabase) {
 
     //<editor-fold desc="ChartsActivity">
     fun loadChartWithData(id: String) = database.chartsDataDao().loadChartWithData(id)
+
+    fun saveDataOnFilesystem(chartId: String, data: List<SimpleChartData>) {
+        if (chartId != "") {
+            val filename = getActualFilename(chartId)
+            val dataCsv = convertDataToCsv(data)
+            saveData(filename, dataCsv.toByteArray())
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="EditActivity">
@@ -59,7 +68,7 @@ class DataRepository(context: Context, db: AppDatabase) {
     //</editor-fold>
 
     //<editor-fold desc="File Operations in Private Storage">
-    fun getChartTitle(chartId: String?): String {
+    private fun getChartTitle(chartId: String?): String {
         var title = ""
         try {
             if (chartId != null) {
@@ -75,26 +84,15 @@ class DataRepository(context: Context, db: AppDatabase) {
         return title
     }
 
-    fun getChartData(chartId: String?): Array<Array<String>> {
-        if (chartId == null)
-            return emptyArray()
-        val filename = getActualFilename(chartId)
-        val lines = getLinesFromFile(filename)
-        return convertCsvToStringMatrix(lines)
-    }
-
-    fun saveChartData(chartId: String?, data: Array<Array<String>>): Boolean {
-        if (chartId != null) {
-            val filename = getActualFilename(chartId)
-            var dataCsv = ""
-            for (i in data.indices) {
-                for (j in data[i].indices)
-                    dataCsv += "${data[i][j]}$CSV_CELL_SEPARATOR"
-                dataCsv += NEW_LINE
-            }
-            return saveData(filename, dataCsv.toByteArray())
-        }
-        return false
+    private fun convertDataToCsv(data: List<SimpleChartData>): String {
+        var dataCsv = ""
+        for (i in data.indices)
+            dataCsv += convert(data[i].chartData1) + CSV_CELL_SEPARATOR +
+                       convert(data[i].chartData2) + CSV_CELL_SEPARATOR +
+                       convert(data[i].chartData3) + CSV_CELL_SEPARATOR +
+                       convert(data[i].chartData4) + CSV_CELL_SEPARATOR +
+                       convert(data[i].chartData5) + CSV_CELL_SEPARATOR + NEW_LINE
+        return dataCsv
     }
 
     private fun deleteChartOnFilesystem(id: String) {
@@ -138,34 +136,6 @@ class DataRepository(context: Context, db: AppDatabase) {
         data.append("Title").append(CSV_CELL_SEPARATOR).append(NEW_LINE)
             .append(chartName).append(CSV_CELL_SEPARATOR).append(NEW_LINE)
         return data.toString()
-    }
-
-    private fun convertCsvToStringMatrix(data: List<String>?): Array<Array<String>> {
-        if (data == null) return emptyArray()
-
-        var chartData = arrayOf<Array<String>>()
-
-        try {
-            data.forEach { line ->
-                var cell = ""
-                var cells = arrayOf<String>()
-
-                for (i in line.indices) {
-                    if (line[i] == CSV_CELL_SEPARATOR) {
-                        cells += cell
-                        cell = ""
-                    }
-                    else {
-                        cell += line[i]
-                    }
-                }
-                chartData += cells
-            }
-            return chartData
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            return emptyArray()
-        }
     }
     //</editor-fold>
 

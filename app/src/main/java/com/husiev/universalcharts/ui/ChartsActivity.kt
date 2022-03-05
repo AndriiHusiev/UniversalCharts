@@ -32,6 +32,17 @@ class ChartsActivity : AppCompatActivity() {
         setObserver()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        // this means that this activity will not be recreated now, user is leaving it
+        // or the activity is otherwise finishing
+        if (isFinishing)
+            if (chartManager.isNotEmptyDataList) {
+                model.saveDataOnFilesystem(chartManager.dataForExport)
+            }
+    }
+
     //<editor-fold desc="Common Initialization">
     private fun setViewModel() {
         model = ViewModelProvider(this)[ChartsActivityViewModel::class.java]
