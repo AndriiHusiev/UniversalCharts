@@ -44,7 +44,7 @@ class EditActivity : AppCompatActivity() {
 
     //<editor-fold desc="Menu">
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         return super.onSupportNavigateUp()
     }
 
