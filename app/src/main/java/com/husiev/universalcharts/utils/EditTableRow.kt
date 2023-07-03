@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Point
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemEditTableRowBinding
 import com.husiev.universalcharts.db.entity.ChartDataEntity
@@ -11,13 +12,12 @@ import com.husiev.universalcharts.db.entity.ChartDataEntity
 class EditTableRow(context: Context) : LinearLayout(context) {
     constructor(context: Context, dataEntity: ChartDataEntity): this(context) {
         rowId = dataEntity.id
-        setCell(0, convert(dataEntity.data?.chartData1))
-        setCell(1, convert(dataEntity.data?.chartData2))
-        setCell(2, convert(dataEntity.data?.chartData3))
-        setCell(3, convert(dataEntity.data?.chartData4))
-        setCell(4, convert(dataEntity.data?.chartData5))
+        dataEntity.data?.dots?.forEachIndexed { index, element ->
+            setCell(index, convert(element))
+        }
     }
 
+    private val points: MutableList<TextView> = mutableListOf()
     private var binding: ItemEditTableRowBinding
     var rowId: Int? = null
 
@@ -29,6 +29,10 @@ class EditTableRow(context: Context) : LinearLayout(context) {
             true
         ) as LinearLayout
         binding = ItemEditTableRowBinding.bind(linearLayout)
+
+        repeat(CHARTS_NUMBER) {index ->
+            points.add(findViewWithTag("chart${index+1}"))
+        }
     }
 
     var rowIndex: Int = 0
@@ -39,59 +43,24 @@ class EditTableRow(context: Context) : LinearLayout(context) {
         }
 
     fun setCell(index: Int, text: String) {
-        when(index) {
-            0 -> {
-                binding.textChart01Point.text = text
-                binding.textChart01Point.tag = "$rowIndex$index"
-            }
-            1 -> {
-                binding.textChart02Point.text = text
-                binding.textChart02Point.tag = "$rowIndex$index"
-            }
-            2 -> {
-                binding.textChart03Point.text = text
-                binding.textChart03Point.tag = "$rowIndex$index"
-            }
-            3 -> {
-                binding.textChart04Point.text = text
-                binding.textChart04Point.tag = "$rowIndex$index"
-            }
-            4 -> {
-                binding.textChart05Point.text = text
-                binding.textChart05Point.tag = "$rowIndex$index"
-            }
+        if (index in points.indices) {
+            points[index].text = text
+            points[index].tag = "$rowIndex$index"
         }
     }
 
-    fun getCell(index: Int): String {
-        return when(index) {
-            0 -> binding.textChart01Point.text.toString()
-            1 -> binding.textChart02Point.text.toString()
-            2 -> binding.textChart03Point.text.toString()
-            3 -> binding.textChart04Point.text.toString()
-            4 -> binding.textChart05Point.text.toString()
-            else -> ""
-        }
-    }
+    fun getCell(index: Int) =
+        if (index in points.indices)
+            points[index].text.toString()
+        else
+            ""
 
     fun setCellClickListener(listener: OnClickListener, index: Int) {
-        when(index) {
-            0 -> binding.textChart01Point.setOnClickListener(listener)
-            1 -> binding.textChart02Point.setOnClickListener(listener)
-            2 -> binding.textChart03Point.setOnClickListener(listener)
-            3 -> binding.textChart04Point.setOnClickListener(listener)
-            4 -> binding.textChart05Point.setOnClickListener(listener)
-        }
+        points[index].setOnClickListener(listener)
     }
 
     fun setCellLongClickListener(listener: OnLongClickListener, index: Int) {
-        when(index) {
-            0 -> binding.textChart01Point.setOnLongClickListener(listener)
-            1 -> binding.textChart02Point.setOnLongClickListener(listener)
-            2 -> binding.textChart03Point.setOnLongClickListener(listener)
-            3 -> binding.textChart04Point.setOnLongClickListener(listener)
-            4 -> binding.textChart05Point.setOnLongClickListener(listener)
-        }
+        points[index].setOnLongClickListener(listener)
     }
 
     companion object {

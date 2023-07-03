@@ -8,4 +8,6 @@ class SimpleChartData (
     @ColumnInfo(name = "chart_data_3") val chartData3: Float? = null,
     @ColumnInfo(name = "chart_data_4") val chartData4: Float? = null,
     @ColumnInfo(name = "chart_data_5") val chartData5: Float? = null
-)
+) {
+    val dots = listOf(chartData1, chartData2, chartData3, chartData4, chartData5)
+}

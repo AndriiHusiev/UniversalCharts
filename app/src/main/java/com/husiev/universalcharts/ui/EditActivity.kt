@@ -199,6 +199,7 @@ class EditActivity : AppCompatActivity() {
                 val pos = getPointPosition(tagCell)
                 editTable("", pos)
             }
+            setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
         }
         removeValueDialog = dialog.create()
     }

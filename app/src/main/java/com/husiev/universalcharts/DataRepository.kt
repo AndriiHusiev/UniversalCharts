@@ -7,7 +7,6 @@ import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.db.entity.ChartsEntity
 import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
-import com.husiev.universalcharts.utils.EditTableRow.Companion.convert
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
@@ -87,11 +86,9 @@ class DataRepository(context: Context, db: AppDatabase) {
     private fun convertDataToCsv(data: List<SimpleChartData>): String {
         var dataCsv = ""
         for (i in data.indices)
-            dataCsv += convert(data[i].chartData1) + CSV_CELL_SEPARATOR +
-                       convert(data[i].chartData2) + CSV_CELL_SEPARATOR +
-                       convert(data[i].chartData3) + CSV_CELL_SEPARATOR +
-                       convert(data[i].chartData4) + CSV_CELL_SEPARATOR +
-                       convert(data[i].chartData5) + CSV_CELL_SEPARATOR + NEW_LINE
+            dataCsv += data[i].dots.joinToString(separator = CSV_CELL_SEPARATOR.toString(), postfix = CSV_CELL_SEPARATOR + NEW_LINE) {
+                "${it?:""}"
+            }
         return dataCsv
     }
 

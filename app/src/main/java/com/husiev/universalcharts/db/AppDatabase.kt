@@ -30,13 +30,13 @@ abstract class AppDatabase : RoomDatabase() {
                     val dao = database.colorsDao()
                     var color = ColorsEntity(1,"black", Color.BLACK)
                     dao.insert(color)
-                    color = ColorsEntity(1,"black", Color.BLUE)
+                    color = ColorsEntity(1,"blue", Color.BLUE)
                     dao.insert(color)
-                    color = ColorsEntity(1,"black", Color.GREEN)
+                    color = ColorsEntity(1,"green", Color.GREEN)
                     dao.insert(color)
-                    color = ColorsEntity(1,"black", Color.RED)
+                    color = ColorsEntity(1,"red", Color.RED)
                     dao.insert(color)
-                    color = ColorsEntity(1,"black", Color.GRAY)
+                    color = ColorsEntity(1,"gray", Color.GRAY)
                     dao.insert(color)
                 }
             }
