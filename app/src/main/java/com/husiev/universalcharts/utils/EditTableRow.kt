@@ -8,12 +8,17 @@ import android.widget.TextView
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ItemEditTableRowBinding
 import com.husiev.universalcharts.db.entity.ChartDataEntity
+import com.husiev.universalcharts.db.entity.SimpleChartData
+import kotlin.reflect.full.declaredMemberProperties
 
 class EditTableRow(context: Context) : LinearLayout(context) {
     constructor(context: Context, dataEntity: ChartDataEntity): this(context) {
         rowId = dataEntity.id
-        dataEntity.data?.dots?.forEachIndexed { index, element ->
-            setCell(index, convert(element))
+
+        dataEntity.data?.let {
+            for ((i, property) in SimpleChartData::class.declaredMemberProperties.withIndex()) {
+                setCell(i, convert(property.get(it) as Float?))
+            }
         }
     }
 

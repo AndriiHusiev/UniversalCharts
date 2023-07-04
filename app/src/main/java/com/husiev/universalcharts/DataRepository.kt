@@ -12,6 +12,7 @@ import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.dele
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
 import java.util.*
+import kotlin.reflect.full.declaredMemberProperties
 
 class DataRepository(context: Context, db: AppDatabase) {
     private val rootDirectory = context.getExternalFilesDir(null)
@@ -28,8 +29,7 @@ class DataRepository(context: Context, db: AppDatabase) {
 
     suspend fun deleteChart(id: String?) {
         id?.let {
-            val title = getChartTitle(id)
-            val entity = ChartsEntity(id, title)
+            val entity = ChartsEntity(id)
             database.chartsDao().delete(entity)
             deleteChartOnFilesystem(id)
         }
@@ -85,10 +85,13 @@ class DataRepository(context: Context, db: AppDatabase) {
 
     private fun convertDataToCsv(data: List<SimpleChartData>): String {
         var dataCsv = ""
+        val dots = SimpleChartData::class.declaredMemberProperties
+
         for (i in data.indices)
-            dataCsv += data[i].dots.joinToString(separator = CSV_CELL_SEPARATOR.toString(), postfix = CSV_CELL_SEPARATOR + NEW_LINE) {
-                "${it?:""}"
+            dataCsv += dots.joinToString(separator = CSV_CELL_SEPARATOR.toString(), postfix = CSV_CELL_SEPARATOR + NEW_LINE) {
+                "${it.get(data[i])}"
             }
+
         return dataCsv
     }
 

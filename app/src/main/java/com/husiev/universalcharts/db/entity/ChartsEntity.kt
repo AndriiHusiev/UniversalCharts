@@ -7,4 +7,6 @@ import androidx.room.PrimaryKey
 class ChartsEntity (
     @PrimaryKey val uid: String,
     var title: String
-)
+) {
+    constructor(uid: String) : this(uid, "")
+}
