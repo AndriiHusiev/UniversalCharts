@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun chartsDataDao(): ChartDataDao
     abstract fun colorsDao(): ColorsDao
 
-    private class AppDatabaseCallback(private val scope: CoroutineScope) : RoomDatabase.Callback() {
+    private class AppDatabaseCallback(private val scope: CoroutineScope) : Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
@@ -44,6 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
     companion object {
+        // Singleton prevents multiple instances of database opening at the same time.
         @Volatile
         private var INSTANCE: AppDatabase? = null
 

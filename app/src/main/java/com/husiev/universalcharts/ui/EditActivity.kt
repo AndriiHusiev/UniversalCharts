@@ -1,12 +1,12 @@
 package com.husiev.universalcharts.ui
 
 import android.app.AlertDialog
-import android.graphics.Point
 import android.os.Bundle
 import android.text.InputType.*
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -134,7 +134,9 @@ class EditActivity : AppCompatActivity() {
     private fun setClickListener(rowIndex: Int, cellIndex: Int): View.OnClickListener {
         return View.OnClickListener {
             tagCell = tagOfEditTableCell(rowIndex, cellIndex)
-            editTextForDialog.setText("")
+            editTextForDialog.setText(customTable[rowIndex].getCell(cellIndex))
+            editTextForDialog.setSelection(0, editTextForDialog.text.length)
+            newValueDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
             newValueDialog.show()
         }
     }
@@ -147,9 +149,10 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
-    private fun editTable(value: String, position: Point) {
-        with(customTable[position.y]) {
-            this.setCell(position.x, value)
+    private fun editTable(value: String) {
+        val pos = getPointPosition(tagCell)
+        with(customTable[pos.y]) {
+            this.setCell(pos.x, value)
             val row = fillEntity(this)
             model.editCell(row)
         }
@@ -179,8 +182,7 @@ class EditActivity : AppCompatActivity() {
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
                 val newValue = editTextForDialog.text.toString()
                 if (newValue != "") {
-                    val pos = getPointPosition(tagCell)
-                    editTable(newValue, pos)
+                    editTable(newValue)
                 }
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
@@ -196,8 +198,7 @@ class EditActivity : AppCompatActivity() {
             setTitle(title)
             setMessage(message)
             setPositiveButton(R.string.alert_dialog_button_ok) { _, _ ->
-                val pos = getPointPosition(tagCell)
-                editTable("", pos)
+                editTable("")
             }
             setNegativeButton(R.string.alert_dialog_button_cancel) { _, _ -> }
         }

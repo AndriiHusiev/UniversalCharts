@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.TableRow
@@ -35,19 +36,7 @@ class SelectionActivity : AppCompatActivity() {
         setWidgets()
         setNewChartDialog()
         setRemoveChartDialog()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.tableAllCharts.let { table ->
-            model.allCharts.observe(this) { charts ->
-                table.removeAllViews()
-                logDebugOut("SelectionActivity", "onResume", "observe")
-                for (i in 0..charts.lastIndex) {
-                    table.addView(addRow(this, charts[i]))
-                }
-            }
-        }
+        setObserver()
     }
 
     private fun setViewModel() {
@@ -60,6 +49,12 @@ class SelectionActivity : AppCompatActivity() {
             tableAllCharts.setColumnStretchable(0, true)
 
             fab.setOnClickListener {
+                newChartDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                newChartDialog.currentFocus?.apply {
+                    if (this is EditText && this.text.isNotEmpty()) {
+                        this.setSelection(0, this.text.length)
+                    }
+                }
                 newChartDialog.show()
             }
 
@@ -68,6 +63,18 @@ class SelectionActivity : AppCompatActivity() {
                     fab.hide()
                 else
                     fab.show()
+            }
+        }
+    }
+
+    private fun setObserver() {
+        binding.tableAllCharts.let { table ->
+            model.allCharts.observe(this) { charts ->
+                table.removeAllViews()
+                logDebugOut("SelectionActivity", "setObserver", "observe")
+                for (i in 0..charts.lastIndex) {
+                    table.addView(addRow(this, charts[i]))
+                }
             }
         }
     }
