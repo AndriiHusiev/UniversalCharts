@@ -15,13 +15,14 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.db.entity.ChartDataEntity
+import com.husiev.universalcharts.db.entity.ColorsEntity
 import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
 import com.husiev.universalcharts.utils.MyMarkerView
 
 class ChartManager {
-    private val chartColor = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.GRAY)
+    private val chartColor = mutableListOf(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK)
     private val _chartData = mutableListOf<SimpleChart>()
     private val _xAxisLabel = mutableListOf<String>()
     private val _dataForExport = mutableListOf<SimpleChartData>()
@@ -33,6 +34,7 @@ class ChartManager {
     fun setChartData(data: List<ChartDataEntity>) {
         _chartData.clear()
         _xAxisLabel.clear()
+        _dataForExport.clear()
 
         if (data.isNotEmpty()) {
             for (i in 0 until CHARTS_NUMBER) {
@@ -69,6 +71,12 @@ class ChartManager {
     fun initialChartAdjusting(chart: CombinedChart, context: Context) {
         setChartMixProperties(chart)
         setChartMarker(chart, context)
+    }
+
+    fun setColorsList(colors: List<ColorsEntity?>) {
+        colors.forEachIndexed { index, colorsEntity ->
+            chartColor[index] = colorsEntity?.color?: Color.BLACK
+        }
     }
 
     private fun setChartMixProperties(chart: CombinedChart) {

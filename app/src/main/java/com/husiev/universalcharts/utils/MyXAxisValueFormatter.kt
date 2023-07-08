@@ -6,7 +6,8 @@ class MyXAxisValueFormatter(values: List<String>): ValueFormatter() {
     private val _values: List<String> = values
 
     override fun getFormattedValue(value: Float): String {
-        if (value > _values.lastIndex) return ""
-        return _values[value.toInt()]
+        val index = value.toInt()
+        if (index != _values.lastIndex || index < 0) return ""
+        return _values[index]
     }
 }

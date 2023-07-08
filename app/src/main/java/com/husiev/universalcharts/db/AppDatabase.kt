@@ -28,15 +28,15 @@ abstract class AppDatabase : RoomDatabase() {
             INSTANCE?.let { database ->
                 scope.launch {
                     val dao = database.colorsDao()
-                    var color = ColorsEntity(1,"black", Color.BLACK)
+                    var color = ColorsEntity("black", Color.BLACK)
                     dao.insert(color)
-                    color = ColorsEntity(1,"blue", Color.BLUE)
+                    color = ColorsEntity("blue", Color.BLUE)
                     dao.insert(color)
-                    color = ColorsEntity(1,"green", Color.GREEN)
+                    color = ColorsEntity("green", Color.GREEN)
                     dao.insert(color)
-                    color = ColorsEntity(1,"red", Color.RED)
+                    color = ColorsEntity("red", Color.RED)
                     dao.insert(color)
-                    color = ColorsEntity(1,"gray", Color.GRAY)
+                    color = ColorsEntity("gray", Color.GRAY)
                     dao.insert(color)
                 }
             }

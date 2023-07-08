@@ -24,7 +24,7 @@ class EditTableRow(context: Context) : LinearLayout(context) {
 
     private val points: MutableList<TextView> = mutableListOf()
     private var binding: ItemEditTableRowBinding
-    var rowId: Int? = null
+    var rowId: Int = 0
 
     init {
         val mInflater = LayoutInflater.from(context)

@@ -5,7 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "colors")
 class ColorsEntity (
-    @PrimaryKey(autoGenerate = true) val uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
     val title: String,
     val color: Int
-)
+) {
+    constructor(title: String, color: Int): this(0, title, color)
+}

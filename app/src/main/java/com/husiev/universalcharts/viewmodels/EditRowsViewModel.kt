@@ -22,9 +22,9 @@ class EditRowsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun deleteLastRow(row: ChartDataEntity) {
+    fun deleteLastRow(rowId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteLastRowOf(row)
+            repository.deleteLastRowOf(chartId, rowId)
         }
     }
 

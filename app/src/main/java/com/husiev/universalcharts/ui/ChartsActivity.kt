@@ -89,6 +89,10 @@ class ChartsActivity : AppCompatActivity() {
     }
 
     private fun setObserver() {
+        model.allColors.observe(this) {
+            chartManager.setColorsList(it)
+        }
+
         model.loadChartData().observe(this) {
             title = it.chart.title
             logDebugOut("ChartsActivity", "setObserver ChartDataEntity size", "${it.data.size}")
@@ -96,6 +100,8 @@ class ChartsActivity : AppCompatActivity() {
             if (chartManager.isNotEmptyDataList){
                 binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabels)
                 binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
+            } else {
+                binding.combinedChartLayout.clear()
             }
             binding.combinedChartLayout.invalidate()
         }

@@ -67,10 +67,8 @@ class EditActivity : AppCompatActivity() {
                 model.addRowInLastPosition()
             }
             R.id.action_delete_row -> {
-                if (binding.tableEditChartData.childCount > 0) {
-                    val row = fillEntity(customTable.last())
-                    model.deleteLastRow(row)
-                }
+                if (customTable.isNotEmpty())
+                    model.deleteLastRow(customTable.last().rowId)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -99,6 +97,7 @@ class EditActivity : AppCompatActivity() {
 
     private fun setObserver() {
         model.loadListOfChartData().observe(this) { data ->
+            logDebugOut("EditActivity", "setObserver() ChartDataEntity size", "${data.size}")
             fillCustomTable(data)
             fillTable()
         }

@@ -9,7 +9,6 @@ import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
-import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.readLinesFromFile
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
 import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
@@ -49,6 +48,8 @@ class DataRepository(context: Context, db: AppDatabase) {
     //</editor-fold>
 
     //<editor-fold desc="EditActivity">
+    val listOfColors = database.colorsDao().loadColorsList()
+
     fun loadListOfChartData(id: String) = database.chartsDataDao().loadData(id)
 
     suspend fun insertNewRowTo(chartId: String) {
@@ -57,7 +58,8 @@ class DataRepository(context: Context, db: AppDatabase) {
         database.chartsDataDao().insert(row)
     }
 
-    suspend fun deleteLastRowOf(row: ChartDataEntity) {
+    suspend fun deleteLastRowOf(chartId: String, rowId: Int) {
+        val row = ChartDataEntity(rowId, chartId, SimpleChartData())
         database.chartsDataDao().delete(row)
     }
 
@@ -67,30 +69,18 @@ class DataRepository(context: Context, db: AppDatabase) {
     //</editor-fold>
 
     //<editor-fold desc="File Operations in Private Storage">
-    private fun getChartTitle(chartId: String?): String {
-        var title = ""
-        try {
-            if (chartId != null) {
-                val filename = "$chartId/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
-                val data = getLinesFromFile(filename)
-                if (data != null && data.size > 1)
-                    title = data[1].substring(0, data[1].length-1)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return title
-    }
-
     private fun convertDataToCsv(data: List<SimpleChartData>): String {
         var dataCsv = ""
         val dots = SimpleChartData::class.declaredMemberProperties
 
-        for (i in data.indices)
-            dataCsv += dots.joinToString(separator = CSV_CELL_SEPARATOR.toString(), postfix = CSV_CELL_SEPARATOR + NEW_LINE) {
-                "${it.get(data[i])}"
+        for (i in data.indices) {
+            dataCsv += dots.joinToString(
+                separator = CSV_CELL_SEPARATOR.toString(),
+                postfix = CSV_CELL_SEPARATOR + NEW_LINE
+            ) {
+                "${it.get(data[i])?:""}"
             }
+        }
 
         return dataCsv
     }
@@ -109,13 +99,6 @@ class DataRepository(context: Context, db: AppDatabase) {
         val path = "$dirName/$CHART_INFO_FILENAME$FILE_EXTENSION_CSV"
         saveData(path, prepareDataToSaving(chartTitle).toByteArray())
         return dirName
-    }
-
-    private fun getLinesFromFile(filename: String): List<String>? {
-        return if (rootDirectory != null)
-            readLinesFromFile(rootDirectory, filename)
-        else
-            null
     }
 
     private fun saveData(filename: String, data: ByteArray, append: Boolean = false): Boolean {
