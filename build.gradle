@@ -13,6 +13,15 @@ buildscript {
     }
 }
 
+plugins {
+    /**
+     * Use `apply false` in the top-level build.gradle file to add a Gradle
+     * plugin as a build dependency but not apply it to the current (root) project.
+     * Don't use `apply false` in sub-projects.
+     */
+    id 'com.google.devtools.ksp' version '1.8.22-1.0.11' apply false
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
