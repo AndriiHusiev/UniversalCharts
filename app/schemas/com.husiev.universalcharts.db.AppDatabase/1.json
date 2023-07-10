@@ -1,0 +1,150 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "5957bd66f9dced2605131f94fee69ec9",
+    "entities": [
+      {
+        "tableName": "charts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "chart_data",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chart_uid` TEXT NOT NULL, `chart_data_1` REAL, `chart_data_2` REAL, `chart_data_3` REAL, `chart_data_4` REAL, `chart_data_5` REAL, FOREIGN KEY(`chart_uid`) REFERENCES `charts`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chartUid",
+            "columnName": "chart_uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "data.chartData1",
+            "columnName": "chart_data_1",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "data.chartData2",
+            "columnName": "chart_data_2",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "data.chartData3",
+            "columnName": "chart_data_3",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "data.chartData4",
+            "columnName": "chart_data_4",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "data.chartData5",
+            "columnName": "chart_data_5",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_chart_data_chart_uid",
+            "unique": false,
+            "columnNames": [
+              "chart_uid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_chart_data_chart_uid` ON `${TABLE_NAME}` (`chart_uid`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "charts",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chart_uid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "colors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `color` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5957bd66f9dced2605131f94fee69ec9')"
+    ]
+  }
+}

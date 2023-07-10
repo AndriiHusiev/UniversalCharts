@@ -60,6 +60,18 @@ class EditTableRow(context: Context) : LinearLayout(context) {
         else
             ""
 
+    fun toChartDataEntity(chartUid: String) = ChartDataEntity(
+        id = rowId,
+        chartUid = chartUid,
+        data = SimpleChartData(
+            getCell(0).toFloatOrNull(),
+            getCell(1).toFloatOrNull(),
+            getCell(2).toFloatOrNull(),
+            getCell(3).toFloatOrNull(),
+            getCell(4).toFloatOrNull(),
+        )
+    )
+
     fun setCellClickListener(listener: OnClickListener, index: Int) {
         points[index].setOnClickListener(listener)
     }

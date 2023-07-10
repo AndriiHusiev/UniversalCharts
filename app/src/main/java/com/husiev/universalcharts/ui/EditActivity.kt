@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.db.entity.ChartDataEntity
-import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.EditRowsViewModel
 
@@ -152,21 +151,7 @@ class EditActivity : AppCompatActivity() {
         val pos = getPointPosition(tagCell)
         with(customTable[pos.y]) {
             this.setCell(pos.x, value)
-            val row = fillEntity(this)
-            model.editCell(row)
-        }
-    }
-
-    private fun fillEntity(editTableRow: EditTableRow): ChartDataEntity {
-        with(editTableRow) {
-            val data = SimpleChartData(
-                this.getCell(0).toFloatOrNull(),
-                this.getCell(1).toFloatOrNull(),
-                this.getCell(2).toFloatOrNull(),
-                this.getCell(3).toFloatOrNull(),
-                this.getCell(4).toFloatOrNull()
-            )
-            return ChartDataEntity(rowId, model.chartId, data)
+            model.editCell(this.toChartDataEntity(model.chartId))
         }
     }
     //</editor-fold>

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "colors")
-class ColorsEntity (
+data class ColorsEntity (
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
     val title: String,
     val color: Int

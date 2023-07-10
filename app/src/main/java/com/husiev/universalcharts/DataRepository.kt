@@ -68,6 +68,10 @@ class DataRepository(context: Context, db: AppDatabase) {
     }
     //</editor-fold>
 
+    //<editor-fold desc="Settings">
+    suspend fun listOfSettings(chartId: String) = database.settingsDao().loadSettings(chartId)
+    //</editor-fold>
+
     //<editor-fold desc="File Operations in Private Storage">
     private fun convertDataToCsv(data: List<SimpleChartData>): String {
         var dataCsv = ""
