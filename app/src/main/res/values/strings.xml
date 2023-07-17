@@ -23,4 +23,17 @@
     <string name="alert_dialog_header_enter_new_value">Enter new value</string>
     <string name="alert_dialog_header_delete_value">Clear cell</string>
     <string name="alert_dialog_message_delete_value">Do you really want to delete value?</string>
+
+    <!-- Strings used in SettingsActivity -->
+    <string name="title_activity_settings">Chart Settings</string>
+    <string name="header_text_tab1">Chart #1</string>
+    <string name="header_text_tab2">Chart #2</string>
+    <string name="header_text_tab3">Chart #3</string>
+    <string name="header_text_tab4">Chart #4</string>
+    <string name="header_text_tab5">Chart #5</string>
+    <string name="settings_show_chart_text">Show chart</string>
+    <string name="settings_show_dots_text">Show dots</string>
+    <string name="settings_curved_text">Curved (Bezier)</string>
+    <string name="settings_chart_line_width_text">Line width</string>
+    <string name="settings_chart_line_color_text">Line color</string>
 </resources>

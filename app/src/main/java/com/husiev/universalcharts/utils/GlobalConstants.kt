@@ -17,30 +17,9 @@ private const val colon = ": "
 private const val SHOW_LOG = true
 //private const val SHOW_LOG = false
 
-fun logDebugOut(obj: String, message: String, param: String) {
+fun logDebugOut(obj: String, message: String, param: Any) {
     if (SHOW_LOG) {
-        val compiledMessage = obj + dot + message + colon + param
-        Log.d(APP_TAG, compiledMessage);
-    }
-}
-
-fun logDebugOut(obj: String, message: String, param: Int) {
-    if (SHOW_LOG) {
-        val compiledMessage = obj + dot + message + colon + param
-        Log.d(APP_TAG, compiledMessage);
-    }
-}
-
-fun logDebugOut(obj: String, message: String, param: Float) {
-    if (SHOW_LOG) {
-        val compiledMessage = obj + dot + message + colon + param
-        Log.d(APP_TAG, compiledMessage);
-    }
-}
-
-fun logDebugOut(obj: String, message: String, param: Boolean) {
-    if (SHOW_LOG) {
-        val compiledMessage = obj + dot + message + colon + param
-        Log.d(APP_TAG, compiledMessage);
+        val compiledMessage = obj + dot + message + colon + param.toString()
+        Log.d(APP_TAG, compiledMessage)
     }
 }
