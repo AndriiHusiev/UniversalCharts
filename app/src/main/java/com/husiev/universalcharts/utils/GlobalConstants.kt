@@ -1,5 +1,6 @@
 package com.husiev.universalcharts.utils
 
+import android.graphics.Color
 import android.util.Log
 
 const val CHART_INFO_FILENAME = "general_info"
@@ -10,6 +11,7 @@ const val INTENT_CHART_ID = "chartID"
 const val CHARTS_NUMBER = 5
 const val COLOR_TEXT_DARK: Int = 0xFF51514B.toInt()
 const val CHART_DATA_FILENAME = "data"
+val colors = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.GRAY)
 
 private const val APP_TAG = "UCharts: "
 private const val dot = ". "

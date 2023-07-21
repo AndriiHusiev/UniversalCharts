@@ -3,7 +3,6 @@ package com.husiev.universalcharts.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.husiev.universalcharts.UChartApplication
 import com.husiev.universalcharts.DataRepository

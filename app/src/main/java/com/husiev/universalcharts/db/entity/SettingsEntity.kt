@@ -22,11 +22,16 @@ data class SettingsEntity (
     val chartUid: String,
     val label: String,
     @ColumnInfo(name = "visible")
-    val isVisible: Boolean,
+    val isVisible: Boolean = true,
     @ColumnInfo(name = "dots")
-    val showDots: Boolean,
-    val curved: Boolean,
+    val showDots: Boolean = true,
+    val curved: Boolean = true,
     val color: Int,
     @ColumnInfo(name = "width")
     val lineWidth: Int,
+)
+
+data class SettingsKey(
+    @ColumnInfo(name = "uid") val uid: Int,
+    @ColumnInfo(name = "chart_uid") val chartUid: String
 )

@@ -9,5 +9,10 @@ data class ChartWithData (
         parentColumn = "uid",
         entityColumn = "chart_uid"
     )
-    val data: List<ChartDataEntity>
+    val data: List<ChartDataEntity>,
+    @Relation(
+        parentColumn = "uid",
+        entityColumn = "chart_uid"
+    )
+    val settings: List<SettingsEntity>
 )

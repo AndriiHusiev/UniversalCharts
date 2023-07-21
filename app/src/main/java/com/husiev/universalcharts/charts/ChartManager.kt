@@ -14,8 +14,9 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.husiev.universalcharts.R
-import com.husiev.universalcharts.db.entity.ChartDataEntity
+import com.husiev.universalcharts.db.entity.ChartWithData
 import com.husiev.universalcharts.db.entity.ColorsEntity
+import com.husiev.universalcharts.db.entity.SettingsEntity
 import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
@@ -26,23 +27,26 @@ class ChartManager {
     private val _chartData = mutableListOf<SimpleChart>()
     private val _xAxisLabel = mutableListOf<String>()
     private val _dataForExport = mutableListOf<SimpleChartData>()
+    private val _settings = mutableListOf<SettingsEntity>()
 
     val isNotEmptyDataList: Boolean get() = _chartData.isNotEmpty()
     val xAxisLabels: List<String> get() = _xAxisLabel
     val dataForExport: List<SimpleChartData> get() = _dataForExport
 
-    fun setChartData(data: List<ChartDataEntity>) {
+    fun setChartData(charts: ChartWithData) {
         _chartData.clear()
         _xAxisLabel.clear()
         _dataForExport.clear()
+        _settings.clear()
+        _settings.addAll(charts.settings)
 
-        if (data.isNotEmpty()) {
+        if (charts.data.isNotEmpty()) {
             for (i in 0 until CHARTS_NUMBER) {
-                _chartData.add(SimpleChart("data0$i"))
+                _chartData.add(SimpleChart(_settings[i].label))
             }
 
-            for (i in data.indices) {
-                data[i].data?.let {
+            for (i in charts.data.indices) {
+                charts.data[i].data?.let {
                     setPointData(0, i, it.chartData1)
                     setPointData(1, i, it.chartData2)
                     setPointData(2, i, it.chartData3)
@@ -141,10 +145,10 @@ class ChartManager {
         }
 
         return LineDataSet(entries, _chartData[index].label).apply {
-            color = chartColor[index]
-            lineWidth = 2f
+            color = chartColor[_settings[index].color]
+            lineWidth = _settings[index].lineWidth.toFloat()
             valueTextColor = COLOR_TEXT_DARK
-            mode = LineDataSet.Mode.CUBIC_BEZIER
+            mode = if (_settings[index].curved) LineDataSet.Mode.CUBIC_BEZIER else LineDataSet.Mode.LINEAR
             cubicIntensity = 0.1f
             setDrawValues(false)
             axisDependency = YAxis.AxisDependency.LEFT
@@ -152,9 +156,11 @@ class ChartManager {
             setCircleColor(chartColor[index])
             circleRadius = 4f
             circleHoleRadius = 2f
-            setDrawCircles(true)
-            setDrawCircleHole(true)
-            isVisible = true
+            if (_settings[index].showDots) {
+                setDrawCircles(true)
+                setDrawCircleHole(true)
+            }
+            isVisible = _settings[index].isVisible
         }
     }
     //</editor-fold>

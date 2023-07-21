@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.husiev.universalcharts.db.AppDatabase
 import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.db.entity.ChartsEntity
+import com.husiev.universalcharts.db.entity.SettingsEntity
 import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
@@ -21,9 +22,21 @@ class DataRepository(context: Context, db: AppDatabase) {
     var listOfCharts: LiveData<List<ChartsEntity>> = database.chartsDao().loadChartsList()
 
     suspend fun insertChart(chartTitle: String) {
-        val chartUid = createChartOnFilesystem(chartTitle)
-        val entity = ChartsEntity(chartUid, chartTitle)
+        val chartId = createChartOnFilesystem(chartTitle)
+        val entity = ChartsEntity(chartId, chartTitle)
+
         database.chartsDao().insert(entity)
+
+        repeat(CHARTS_NUMBER) {
+            database.settingsDao().insert(
+                SettingsEntity(
+                    chartUid = chartId,
+                    label = "chart_${it}",
+                    color = it,
+                    lineWidth = 2
+                )
+            )
+        }
     }
 
     suspend fun deleteChart(id: String?) {
@@ -69,7 +82,9 @@ class DataRepository(context: Context, db: AppDatabase) {
     //</editor-fold>
 
     //<editor-fold desc="Settings">
-    suspend fun listOfSettings(chartId: String) = database.settingsDao().loadSettings(chartId)
+    fun getListOfKeys(chartId: String) = database.settingsDao().loadKeys(chartId)
+
+    fun getListOfSettings(chartId: String, uid: Int) = database.settingsDao().loadSettings(chartId, uid)
     //</editor-fold>
 
     //<editor-fold desc="File Operations in Private Storage">

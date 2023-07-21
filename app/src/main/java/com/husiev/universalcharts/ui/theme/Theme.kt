@@ -1,4 +1,4 @@
-package com.husiev.universalcharts.ui.ui.theme
+package com.husiev.universalcharts.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

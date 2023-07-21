@@ -68,7 +68,11 @@ class ChartsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.action_settings -> return true
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity().javaClass)
+                intent.putExtra(INTENT_CHART_ID, model.chartId)
+                startActivity(intent)
+            }
             R.id.action_edit -> {
                 val intent = Intent(this, EditActivity().javaClass)
                 intent.putExtra(INTENT_CHART_ID, model.chartId)
@@ -96,7 +100,7 @@ class ChartsActivity : AppCompatActivity() {
         model.loadChartData().observe(this) {
             title = it.chart.title
             logDebugOut("ChartsActivity", "setObserver ChartDataEntity size", "${it.data.size}")
-            chartManager.setChartData(it.data)
+            chartManager.setChartData(it)
             if (chartManager.isNotEmptyDataList){
                 binding.combinedChartLayout.xAxis.valueFormatter = MyXAxisValueFormatter(chartManager.xAxisLabels)
                 binding.combinedChartLayout.data = CombinedData().apply { this.setData(chartManager.getLineData()) }
