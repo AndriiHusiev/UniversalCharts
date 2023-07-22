@@ -156,10 +156,8 @@ class ChartManager {
             setCircleColor(chartColor[index])
             circleRadius = 4f
             circleHoleRadius = 2f
-            if (_settings[index].showDots) {
-                setDrawCircles(true)
-                setDrawCircleHole(true)
-            }
+            setDrawCircles(_settings[index].showDots)
+            setDrawCircleHole(_settings[index].showDots)
             isVisible = _settings[index].isVisible
         }
     }

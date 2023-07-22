@@ -11,10 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,10 +22,9 @@ fun SwitchableItem(
     text: String,
     checked: Boolean,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null
+    icon: ImageVector? = null,
+    onSwitch: (Boolean) -> Unit = {}
 ) {
-    var checked by remember { mutableStateOf(true) }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -48,7 +43,7 @@ fun SwitchableItem(
         )
         Switch(
             checked = checked,
-            onCheckedChange = {checked = it},
+            onCheckedChange = { onSwitch(it) },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.primary
             )

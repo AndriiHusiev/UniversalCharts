@@ -85,6 +85,25 @@ class DataRepository(context: Context, db: AppDatabase) {
     fun getListOfKeys(chartId: String) = database.settingsDao().loadKeys(chartId)
 
     fun getListOfSettings(chartId: String, uid: Int) = database.settingsDao().loadSettings(chartId, uid)
+
+    suspend fun updateSettings(row: SettingsEntity) = database.settingsDao().update(row)
+
+    fun updateField(
+        uid: Int,
+        label: String?,
+        isVisible: Boolean?,
+        showDots: Boolean?,
+        curved: Boolean?,
+        color: Int?,
+        lineWidth: Int?
+    ) {
+        label?.let { database.settingsDao().updateLabel(it, uid) }
+        isVisible?.let { database.settingsDao().updateVisibility(it, uid) }
+        showDots?.let { database.settingsDao().updateDots(it, uid) }
+        curved?.let { database.settingsDao().updateCurved(it, uid) }
+        color?.let { database.settingsDao().updateColor(it, uid) }
+        lineWidth?.let { database.settingsDao().updateLineWidth(it, uid) }
+    }
     //</editor-fold>
 
     //<editor-fold desc="File Operations in Private Storage">

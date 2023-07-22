@@ -36,8 +36,9 @@ fun DropDownItem(
     text: String,
     modifier: Modifier = Modifier,
     selectedIndex: Int = 0,
-    list: List<String> = listOf("Black", "White", "Blue", "Yellow"),
-    icon: ImageVector? = null
+    list: List<String>?,
+    icon: ImageVector? = null,
+    onItemClick: (Int) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -64,7 +65,7 @@ fun DropDownItem(
                 .wrapContentSize(Alignment.TopStart),
         ) {
             Text(
-                text = list[selectedIndex],
+                text = list?.get(selectedIndex) ?: "--no data--",
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = { expanded = true })
@@ -81,11 +82,11 @@ fun DropDownItem(
                 onDismissRequest = { expanded = false },
                 offset = DpOffset(40.dp, 0.dp)
             ) {
-                list.forEachIndexed { index, label ->
+                list?.forEachIndexed { index, label ->
                     DropdownMenuItem(
                         text = { Text(label) },
                         onClick = {
-//                            selectedIndex = index
+                            onItemClick(index)
                             expanded = false
                         },
                         leadingIcon = {
