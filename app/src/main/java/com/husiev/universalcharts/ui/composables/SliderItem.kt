@@ -21,18 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import com.husiev.universalcharts.R
-import kotlin.math.roundToInt
 
 @Composable
 fun SliderItem(
-    value: Float,
+    value: Int,
     text: String,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null
+    icon: ImageVector? = null,
+    onChange: (Int) -> Unit = {}
 ) {
-    val minValue = 0.2f
+    val minValue = 1f
     val maxValue = 10f
-    var sliderPosition by remember { mutableStateOf(value) }
+    var sliderPosition by remember { mutableStateOf(value.toFloat()) }
 
     Row(
         modifier = modifier
@@ -48,17 +48,17 @@ fun SliderItem(
             modifier = modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
         ) {
             Text(
-                text = "$text: $sliderPosition",
+                text = "$text: ${sliderPosition.toInt()}",
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(R.dimen.padding_small))
             )
             Slider(
                 value = sliderPosition,
-                onValueChange = { sliderPosition = (it * 10).roundToInt() / 10f },
+                onValueChange = { sliderPosition = it },
                 valueRange = minValue..maxValue,
+                steps = (maxValue - minValue - 1).toInt(),
                 onValueChangeFinished = {
-                    // launch some business logic update with the state you hold
-                    // viewModel.updateSelectedSliderValue(sliderPosition)
+                    onChange(sliderPosition.toInt())
                 },
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.primary,

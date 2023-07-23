@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Universal Charts</string>
+    <string name="dialog_confirm_text">Confirm</string>
+    <string name="dialog_dismiss_text">Dismiss</string>
 
     <!-- Strings used in SelectionActivity -->
     <string name="fab_desc">Add new chart</string>
@@ -31,9 +33,11 @@
     <string name="header_text_tab3">Chart #3</string>
     <string name="header_text_tab4">Chart #4</string>
     <string name="header_text_tab5">Chart #5</string>
+    <string name="settings_chart_label_text">Chart label</string>
     <string name="settings_show_chart_text">Show chart</string>
     <string name="settings_show_dots_text">Show dots</string>
     <string name="settings_curved_text">Curved (Bezier)</string>
     <string name="settings_chart_line_width_text">Line width</string>
     <string name="settings_chart_line_color_text">Line color</string>
+    <string name="settings_dialog_title_text">Change chart label</string>
 </resources>

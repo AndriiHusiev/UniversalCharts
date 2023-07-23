@@ -22,7 +22,7 @@ fun SettingsScreen(
 ) {
     val key by settingsViewModel.keys.observeAsState()
     var curTab by rememberSaveable { mutableStateOf(0) }
-    var curKey = key?.let{it[curTab].uid}?:0
+    val curKey = key?.let{it[curTab].uid}?:0
     val curChartSettings by settingsViewModel.getSettingsOfChart(curKey).observeAsState()
     val colors by settingsViewModel.allColors.observeAsState()
 
@@ -33,7 +33,7 @@ fun SettingsScreen(
                 canNavigateBack = true,
                 modifier = modifier,
                 onClose = onClose,
-                tabTitles = null,
+                tabTitles = listOf("Chart 1", "Chart 2", "Chart 3", "Chart 4", "Chart 5"),
                 tabSelected = curTab,
                 onTabSelected = { curTab = it }
             )
@@ -44,16 +44,16 @@ fun SettingsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxWidth(),
-            onChange = {value, tag ->
-                when(tag) {
-                    "label" -> settingsViewModel.updateField(curKey, label = value as String)
-                    "visible" -> settingsViewModel.updateField(curKey, isVisible = value as Boolean)
-                    "dots" -> settingsViewModel.updateField(curKey, showDots = value as Boolean)
-                    "curved" -> settingsViewModel.updateField(curKey, curved = value as Boolean)
-                    "width" -> settingsViewModel.updateField(curKey, lineWidth = value as Int)
-                    "color" -> settingsViewModel.updateField(curKey, color = value as Int)
-                }
+            listColors = colors
+        ) { value, tag ->
+            when (tag) {
+                "label" -> settingsViewModel.updateField(curKey, label = value as String)
+                "visible" -> settingsViewModel.updateField(curKey, isVisible = value as Boolean)
+                "dots" -> settingsViewModel.updateField(curKey, showDots = value as Boolean)
+                "curved" -> settingsViewModel.updateField(curKey, curved = value as Boolean)
+                "width" -> settingsViewModel.updateField(curKey, lineWidth = value as Int)
+                "color" -> settingsViewModel.updateField(curKey, color = value as Int)
             }
-        )
+        }
     }
 }

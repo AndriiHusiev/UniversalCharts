@@ -30,13 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.db.entity.ColorsEntity
 
 @Composable
 fun DropDownItem(
     text: String,
     modifier: Modifier = Modifier,
     selectedIndex: Int = 0,
-    list: List<String>?,
+    list: List<ColorsEntity?>?,
     icon: ImageVector? = null,
     onItemClick: (Int) -> Unit = {}
 ) {
@@ -65,7 +66,7 @@ fun DropDownItem(
                 .wrapContentSize(Alignment.TopStart),
         ) {
             Text(
-                text = list?.get(selectedIndex) ?: "--no data--",
+                text = list?.get(selectedIndex) ?.title ?: "--no data--",
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = { expanded = true })
@@ -84,7 +85,7 @@ fun DropDownItem(
             ) {
                 list?.forEachIndexed { index, label ->
                     DropdownMenuItem(
-                        text = { Text(label) },
+                        text = { Text(label?.title?:"n/a") },
                         onClick = {
                             onItemClick(index)
                             expanded = false
@@ -93,7 +94,7 @@ fun DropDownItem(
                             Icon(
                                 Icons.Filled.ViewArray,
                                 contentDescription = null,
-                                tint = Color.Green
+                                tint = label?.let{ Color(label.color) } ?: Color.Transparent
                             )
                         }
                     )

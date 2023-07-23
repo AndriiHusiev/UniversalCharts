@@ -21,6 +21,7 @@ import com.husiev.universalcharts.db.entity.SimpleChartData
 import com.husiev.universalcharts.utils.CHARTS_NUMBER
 import com.husiev.universalcharts.utils.COLOR_TEXT_DARK
 import com.husiev.universalcharts.utils.MyMarkerView
+import kotlin.math.pow
 
 class ChartManager {
     private val chartColor = mutableListOf(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK)
@@ -144,6 +145,8 @@ class ChartManager {
             }
         }
 
+        val radius = _settings[index].lineWidth.toDouble().pow(0.65).toFloat()
+
         return LineDataSet(entries, _chartData[index].label).apply {
             color = chartColor[_settings[index].color]
             lineWidth = _settings[index].lineWidth.toFloat()
@@ -153,9 +156,9 @@ class ChartManager {
             setDrawValues(false)
             axisDependency = YAxis.AxisDependency.LEFT
             isHighlightEnabled = true
-            setCircleColor(chartColor[index])
-            circleRadius = 4f
-            circleHoleRadius = 2f
+            setCircleColor(chartColor[_settings[index].color])
+            circleRadius = radius * 2
+            circleHoleRadius = radius
             setDrawCircles(_settings[index].showDots)
             setDrawCircleHole(_settings[index].showDots)
             isVisible = _settings[index].isVisible

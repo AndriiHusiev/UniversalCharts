@@ -1,6 +1,7 @@
 package com.husiev.universalcharts.ui.composables
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -9,22 +10,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.db.entity.ColorsEntity
 import com.husiev.universalcharts.db.entity.SettingsEntity
 
 @Composable
@@ -59,12 +66,32 @@ fun SettingsTopAppBar(
         )
 
         tabTitles?.let {
-            TabRow(selectedTabIndex = tabSelected) {
+            ScrollableTabRow(selectedTabIndex = tabSelected) {
                 it.forEachIndexed { index, title ->
                     Tab(
                         selected = tabSelected == index,
                         onClick = { onTabSelected(index) },
-                        text = { Text(text = title) }
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = if (tabSelected == index)
+                                        Icons.Default.Timeline
+                                    else
+                                        Icons.Outlined.Timeline,
+                                    contentDescription = null,
+                                )
+                                Text(
+                                    text = title,
+                                    modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_small)),
+                                    fontWeight = if (tabSelected == index)
+                                        FontWeight.Bold
+                                    else
+                                        FontWeight.Normal
+                                )
+                            }
+                        }
                     )
                 }
             }
@@ -76,7 +103,7 @@ fun SettingsTopAppBar(
 fun SettingsBody(
     content: SettingsEntity?,
     modifier: Modifier = Modifier,
-    listColors: List<String> = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
+    listColors: List<ColorsEntity?>? = null,
     onChange: (Any, String) -> Unit = { _, _ -> }
 ) {
     Column(
@@ -87,6 +114,13 @@ fun SettingsBody(
             )
     ) {
         content?.let {
+            TextFieldItem(
+                value = content.label,
+                text = stringResource(R.string.settings_chart_label_text),
+                icon = Icons.Filled.TextFields,
+                onChange = { onChange(it, "label") }
+            )
+            Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
             SwitchableItem(
                 text = stringResource(R.string.settings_show_chart_text),
                 checked = content.isVisible,
@@ -97,7 +131,7 @@ fun SettingsBody(
             SwitchableItem(
                 text = stringResource(R.string.settings_show_dots_text),
                 checked = content.showDots,
-                icon = Icons.Filled.Timeline,
+                icon = Icons.Filled.RadioButtonChecked,
                 onSwitch = { onChange(it, "dots") }
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
@@ -109,9 +143,10 @@ fun SettingsBody(
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
             SliderItem(
-                value = content.lineWidth.toFloat(),
+                value = content.lineWidth,
                 text = stringResource(R.string.settings_chart_line_width_text),
-                icon = Icons.Filled.LineWeight
+                icon = Icons.Filled.LineWeight,
+                onChange = { onChange(it, "width") }
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
             DropDownItem(
@@ -119,6 +154,7 @@ fun SettingsBody(
                 icon = Icons.Filled.Opacity,
                 selectedIndex = content.color,
                 list = listColors,
+                onItemClick = { onChange(it, "color") }
             )
         }
     }
@@ -146,6 +182,13 @@ fun SettingsScreenPreview() {
                 label = "chart_preview",
                 color = 1,
                 lineWidth = 2
+            ),
+            listColors = listOf(
+                ColorsEntity( "Color 1", 0 ),
+                ColorsEntity( "Color 2", 0 ),
+                ColorsEntity( "Color 3", 0 ),
+                ColorsEntity( "Color 4", 0 ),
+                ColorsEntity( "Color 5", 0 ),
             )
         )
     }
