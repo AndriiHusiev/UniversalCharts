@@ -1,5 +1,7 @@
 package com.husiev.universalcharts.ui.composables
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -14,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.viewmodels.SettingsViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
@@ -39,20 +42,26 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        SettingsBody(
-            content = curChartSettings,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth(),
-            listColors = colors
-        ) { value, tag ->
-            when (tag) {
-                "label" -> settingsViewModel.updateField(curKey, label = value as String)
-                "visible" -> settingsViewModel.updateField(curKey, isVisible = value as Boolean)
-                "dots" -> settingsViewModel.updateField(curKey, showDots = value as Boolean)
-                "curved" -> settingsViewModel.updateField(curKey, curved = value as Boolean)
-                "width" -> settingsViewModel.updateField(curKey, lineWidth = value as Int)
-                "color" -> settingsViewModel.updateField(curKey, color = value as Int)
+        key?.run {
+            AnimatedContent(
+                targetState = curKey,
+            ) {
+                SettingsBody(
+                    content = curChartSettings,
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth(),
+                    listColors = colors
+                ) { value, tag ->
+                    when (tag) {
+                        "label" -> settingsViewModel.updateField(curKey, label = value as String)
+                        "visible" -> settingsViewModel.updateField(curKey, isVisible = value as Boolean)
+                        "dots" -> settingsViewModel.updateField(curKey, showDots = value as Boolean)
+                        "curved" -> settingsViewModel.updateField(curKey, curved = value as Boolean)
+                        "width" -> settingsViewModel.updateField(curKey, lineWidth = value as Int)
+                        "color" -> settingsViewModel.updateField(curKey, color = value as Int)
+                    }
+                }
             }
         }
     }

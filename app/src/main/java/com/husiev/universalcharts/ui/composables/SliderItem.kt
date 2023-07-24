@@ -1,5 +1,7 @@
 package com.husiev.universalcharts.ui.composables
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,9 +28,11 @@ import com.husiev.universalcharts.R
 fun SliderItem(
     value: Int,
     text: String,
+    expanded: Boolean,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    onChange: (Int) -> Unit = {}
+    onChange: (Int) -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     val minValue = 1f
     val maxValue = 10f
@@ -37,7 +41,11 @@ fun SliderItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+            .padding(
+                horizontal = dimensionResource(R.dimen.padding_small),
+                vertical = dimensionResource(R.dimen.padding_semi_medium)
+            )
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -45,27 +53,31 @@ fun SliderItem(
             contentDescription = null
         )
         Column(
-            modifier = modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
+            modifier = modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                .animateContentSize()
         ) {
             Text(
                 text = "$text: ${sliderPosition.toInt()}",
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(R.dimen.padding_small))
             )
-            Slider(
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it },
-                valueRange = minValue..maxValue,
-                steps = (maxValue - minValue - 1).toInt(),
-                onValueChangeFinished = {
-                    onChange(sliderPosition.toInt())
-                },
-                colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.primary,
-                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                    inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
+            if (expanded) {
+                Slider(
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    valueRange = minValue..maxValue,
+                    steps = (maxValue - minValue - 1).toInt(),
+                    onValueChangeFinished = {
+                        onChange(sliderPosition.toInt())
+                    },
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.primary,
+                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
                 )
-            )
+            }
         }
     }
 }

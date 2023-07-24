@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,37 +22,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.husiev.universalcharts.R
 
 @Composable
 fun TextFieldItem(
     value: String,
     text: String,
+    showDialog: Boolean,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    onChange: (String) -> Unit = {}
+    onChange: (String) -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
-    var showDialog by remember { mutableStateOf(false) }
-    if (showDialog) ShowDialog(
+    ShowDialog(
+        shown = showDialog,
         value = value,
         onConfirm = {
-            showDialog = false
+            onClick()
             onChange(it)
         },
-        onDismiss = { showDialog = false }
+        onDismiss = onClick
     )
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.padding_small))
-            .clickable {
-                showDialog = true
-            },
+            .padding(
+                horizontal = dimensionResource(R.dimen.padding_small),
+                vertical = dimensionResource(R.dimen.padding_semi_medium)
+            )
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -71,13 +72,15 @@ fun TextFieldItem(
             modifier = Modifier
                 .widthIn(1.dp, 200.dp),
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1
+            maxLines = 1,
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
 fun ShowDialog(
+    shown: Boolean,
     value: String,
     modifier: Modifier = Modifier,
     onConfirm: (String) -> Unit = {},
@@ -85,41 +88,30 @@ fun ShowDialog(
 ) {
     var userInput by remember { mutableStateOf(value) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = modifier,
-        title = {
-            Text(text = stringResource(R.string.settings_dialog_title_text))
-        },
-        text = {
-            TextField(
-                value = userInput,
-                onValueChange = { userInput = it },
-                singleLine = true
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(userInput) }) {
-                Text(stringResource(R.string.dialog_confirm_text))
+    if (shown) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            modifier = modifier,
+            title = {
+                Text(text = stringResource(R.string.settings_dialog_title_text))
+            },
+            text = {
+                TextField(
+                    value = userInput,
+                    onValueChange = { userInput = it },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { onConfirm(userInput) }) {
+                    Text(stringResource(R.string.dialog_confirm_text))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = stringResource(R.string.dialog_dismiss_text))
+                }
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.dialog_dismiss_text))
-            }
-        }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TextFieldItemPreview() {
-    MdcTheme {
-        TextFieldItem(
-            value = "chart_preview",
-            text = stringResource(R.string.settings_chart_label_text),
-            icon = Icons.Filled.TextFields,
-            onChange = {  }
         )
     }
 }

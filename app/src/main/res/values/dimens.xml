@@ -12,6 +12,7 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_semi_medium">12dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">24dp</dimen>
     <dimen name="padding_extra_large">32dp</dimen>

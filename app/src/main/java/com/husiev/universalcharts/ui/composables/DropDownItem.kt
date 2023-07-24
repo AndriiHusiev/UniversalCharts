@@ -46,7 +46,10 @@ fun DropDownItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.padding_small)),
+            .padding(
+                horizontal = dimensionResource(R.dimen.padding_small),
+                vertical = dimensionResource(R.dimen.padding_semi_medium)
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -57,7 +60,7 @@ fun DropDownItem(
             text = text,
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
         )
 
         Box(
@@ -69,6 +72,7 @@ fun DropDownItem(
                 text = list?.get(selectedIndex) ?.title ?: "--no data--",
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
                     .clickable(onClick = { expanded = true })
                     .border(
                         width = 1.dp,

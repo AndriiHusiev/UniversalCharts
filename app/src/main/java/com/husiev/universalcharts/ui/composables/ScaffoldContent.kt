@@ -23,6 +23,10 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -106,6 +110,9 @@ fun SettingsBody(
     listColors: List<ColorsEntity?>? = null,
     onChange: (Any, String) -> Unit = { _, _ -> }
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+    var expandSlider by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .padding(
@@ -117,8 +124,10 @@ fun SettingsBody(
             TextFieldItem(
                 value = content.label,
                 text = stringResource(R.string.settings_chart_label_text),
+                showDialog = showDialog,
                 icon = Icons.Filled.TextFields,
-                onChange = { onChange(it, "label") }
+                onChange = { onChange(it, "label") },
+                onClick = { showDialog = !showDialog }
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
             SwitchableItem(
@@ -145,8 +154,10 @@ fun SettingsBody(
             SliderItem(
                 value = content.lineWidth,
                 text = stringResource(R.string.settings_chart_line_width_text),
+                expanded = expandSlider,
                 icon = Icons.Filled.LineWeight,
-                onChange = { onChange(it, "width") }
+                onChange = { onChange(it, "width") },
+                onClick = { expandSlider = !expandSlider }
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
             DropDownItem(
