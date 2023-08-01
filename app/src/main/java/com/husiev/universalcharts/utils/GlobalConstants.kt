@@ -14,14 +14,12 @@ const val CHART_DATA_FILENAME = "data"
 val colors = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.RED, Color.GRAY)
 
 private const val APP_TAG = "UCharts: "
-private const val dot = ". "
-private const val colon = ": "
 private const val SHOW_LOG = true
 //private const val SHOW_LOG = false
 
 fun logDebugOut(obj: String, message: String, param: Any) {
     if (SHOW_LOG) {
-        val compiledMessage = obj + dot + message + colon + param.toString()
+        val compiledMessage = "$obj. $message: $param"
         Log.d(APP_TAG, compiledMessage)
     }
 }

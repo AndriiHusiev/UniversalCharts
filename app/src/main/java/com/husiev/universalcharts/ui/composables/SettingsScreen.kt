@@ -44,7 +44,7 @@ fun SettingsScreen(
     ) { innerPadding ->
         key?.run {
             AnimatedContent(
-                targetState = curKey,
+                targetState = curKey, label = "AnimTabContent",
             ) {
                 SettingsBody(
                     content = curChartSettings,

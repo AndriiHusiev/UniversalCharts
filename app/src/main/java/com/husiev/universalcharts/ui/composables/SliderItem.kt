@@ -1,14 +1,20 @@
 package com.husiev.universalcharts.ui.composables
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -41,10 +47,7 @@ fun SliderItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(R.dimen.padding_small),
-                vertical = dimensionResource(R.dimen.padding_semi_medium)
-            )
+            .padding(horizontal = dimensionResource(R.dimen.padding_small))
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -53,15 +56,36 @@ fun SliderItem(
             contentDescription = null
         )
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                .animateContentSize()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                )
         ) {
-            Text(
-                text = "$text: ${sliderPosition.toInt()}",
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Crossfade(
+                    targetState = expanded,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                        .weight(1f),
+                    label = "AnimSliderLabel"
+                ) {
+                    when (it) {
+                        true -> Text(text = "$text: ${sliderPosition.toInt()}")
+                        false -> Text(text = text)
+                    }
+                }
+                IconButton(onClick = onClick) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = if (expanded) "Show less" else "Show more"
+                    )
+                }
+
+            }
             if (expanded) {
                 Slider(
                     value = sliderPosition,
