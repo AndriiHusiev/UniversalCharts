@@ -8,18 +8,20 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityEditBinding
 import com.husiev.universalcharts.db.entity.ChartDataEntity
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.EditRowsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EditActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditBinding
-    private lateinit var model: EditRowsViewModel
+    private val model: EditRowsViewModel by viewModels()
     private lateinit var newValueDialog: AlertDialog
     private lateinit var removeValueDialog: AlertDialog
     private lateinit var editTextForDialog: EditText
@@ -33,7 +35,6 @@ class EditActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initToolbar()
-        setViewModel()
         getIntentData()
         initActivityItems()
         setNewValueDialog()
@@ -90,13 +91,9 @@ class EditActivity : AppCompatActivity() {
         }
     }
 
-    private fun setViewModel() {
-        model = ViewModelProvider(this)[EditRowsViewModel::class.java]
-    }
-
     private fun setObserver() {
         model.loadListOfChartData().observe(this) { data ->
-            logDebugOut("EditActivity", "setObserver() ChartDataEntity size", "${data.size}")
+//            logDebugOut("EditActivity", "setObserver() ChartDataEntity size", "${data.size}")
             fillCustomTable(data)
             fillTable()
         }

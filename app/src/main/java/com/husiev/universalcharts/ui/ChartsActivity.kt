@@ -4,19 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.data.CombinedData
 import com.husiev.universalcharts.charts.ChartManager
 import com.husiev.universalcharts.databinding.ActivityChartsBinding
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.ChartsActivityViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChartsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChartsBinding
-    private lateinit var model: ChartsActivityViewModel
+    private val model: ChartsActivityViewModel by viewModels()
     private val chartManager = ChartManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +27,6 @@ class ChartsActivity : AppCompatActivity() {
         binding = ActivityChartsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setViewModel()
         setMenu()
         getIntentData()
         initialChartAdjusting()
@@ -44,10 +45,6 @@ class ChartsActivity : AppCompatActivity() {
     }
 
     //<editor-fold desc="Common Initialization">
-    private fun setViewModel() {
-        model = ViewModelProvider(this)[ChartsActivityViewModel::class.java]
-    }
-
     private fun setMenu() {
         setSupportActionBar(binding.toolbarCharts)
         supportActionBar?.let {

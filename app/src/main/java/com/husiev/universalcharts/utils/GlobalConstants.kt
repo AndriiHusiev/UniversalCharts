@@ -23,3 +23,5 @@ fun logDebugOut(obj: String, message: String, param: Any) {
         Log.d(APP_TAG, compiledMessage)
     }
 }
+
+fun getActualFilename(chartId: String) = "$chartId/$CHART_DATA_FILENAME$FILE_EXTENSION_CSV"

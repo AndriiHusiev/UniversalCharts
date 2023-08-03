@@ -1,15 +1,17 @@
 package com.husiev.universalcharts.viewmodels
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.husiev.universalcharts.DataRepository
-import com.husiev.universalcharts.UChartApplication
 import com.husiev.universalcharts.db.entity.ChartDataEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EditRowsViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: DataRepository = (application as UChartApplication).repository
+@HiltViewModel
+class EditRowsViewModel @Inject constructor(
+    private val repository: DataRepository
+) : ViewModel() {
     var chartId: String = ""
 
     fun loadListOfChartData(): LiveData<List<ChartDataEntity>> {

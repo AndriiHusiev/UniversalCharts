@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.husiev.universalcharts.R
+import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.SettingsViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -23,10 +24,8 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel,
     onClose: () -> Unit = {}
 ) {
-    val key by settingsViewModel.keys.observeAsState()
     var curTab by rememberSaveable { mutableStateOf(0) }
-    val curKey = key?.let{it[curTab].uid}?:0
-    val curChartSettings by settingsViewModel.getSettingsOfChart(curKey).observeAsState()
+    val curChartSettings by settingsViewModel.getSettings().observeAsState()
     val colors by settingsViewModel.allColors.observeAsState()
 
     Scaffold(
@@ -42,24 +41,26 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        key?.run {
+        curChartSettings?.run {
             AnimatedContent(
-                targetState = curKey, label = "AnimTabContent",
+                targetState = curTab, label = "AnimTabContent",
             ) {
                 SettingsBody(
-                    content = curChartSettings,
+                    content = this@run[curTab],
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxWidth(),
                     listColors = colors
                 ) { value, tag ->
-                    when (tag) {
-                        "label" -> settingsViewModel.updateField(curKey, label = value as String)
-                        "visible" -> settingsViewModel.updateField(curKey, isVisible = value as Boolean)
-                        "dots" -> settingsViewModel.updateField(curKey, showDots = value as Boolean)
-                        "curved" -> settingsViewModel.updateField(curKey, curved = value as Boolean)
-                        "width" -> settingsViewModel.updateField(curKey, lineWidth = value as Int)
-                        "color" -> settingsViewModel.updateField(curKey, color = value as Int)
+                    this@run[curTab]?.let {
+                        when (tag) {
+                            "label" -> settingsViewModel.updateField(it.uid, label = value as String)
+                            "visible" -> settingsViewModel.updateField(it.uid, isVisible = value as Boolean)
+                            "dots" -> settingsViewModel.updateField(it.uid, showDots = value as Boolean)
+                            "curved" -> settingsViewModel.updateField(it.uid, curved = value as Boolean)
+                            "width" -> settingsViewModel.updateField(it.uid, lineWidth = value as Int)
+                            "color" -> settingsViewModel.updateField(it.uid, color = value as Int)
+                        }
                     }
                 }
             }

@@ -1,22 +1,22 @@
 package com.husiev.universalcharts.ui
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.ViewModelProvider
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.husiev.universalcharts.ui.composables.SettingsScreen
 import com.husiev.universalcharts.utils.INTENT_CHART_ID
-import com.husiev.universalcharts.viewmodels.SettingsModelFactory
 import com.husiev.universalcharts.viewmodels.SettingsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +24,6 @@ class SettingsActivity : AppCompatActivity() {
 
         setContentView(
             ComposeView(this).apply {
-                consumeWindowInsets = false
                 setContent {
                     MdcTheme {
                         Surface(
@@ -49,13 +48,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun getIntentData() {
         intent.getStringExtra(INTENT_CHART_ID)?.let {
-            settingsViewModel = ViewModelProvider(
-                owner = this,
-                factory = SettingsModelFactory(
-                    chartId = it,
-                    application = application
-                )
-            )[SettingsViewModel::class.java]
+            settingsViewModel.chartId = it
         }
     }
 }

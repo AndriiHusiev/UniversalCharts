@@ -11,12 +11,18 @@ import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.createDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.deleteDirectory
 import com.husiev.universalcharts.utils.ExternalStorageOperations.Companion.saveDataToFile
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.reflect.full.declaredMemberProperties
 
-class DataRepository(context: Context, db: AppDatabase) {
+@Singleton
+class DataRepository @Inject constructor(
+    @ApplicationContext context: Context,
+    private val database: AppDatabase
+) {
     private val rootDirectory = context.getExternalFilesDir(null)
-    private val database = db
 
     //<editor-fold desc="SelectionActivity">
     var listOfCharts: LiveData<List<ChartsEntity>> = database.chartsDao().loadChartsList()
@@ -82,11 +88,7 @@ class DataRepository(context: Context, db: AppDatabase) {
     //</editor-fold>
 
     //<editor-fold desc="Settings">
-    fun getListOfKeys(chartId: String) = database.settingsDao().loadKeys(chartId)
-
-    fun getListOfSettings(chartId: String, uid: Int) = database.settingsDao().loadSettings(chartId, uid)
-
-    suspend fun updateSettings(row: SettingsEntity) = database.settingsDao().update(row)
+    fun getListOfSettings(chartId: String) = database.settingsDao().loadSettings(chartId)
 
     fun updateField(
         uid: Int,
@@ -159,19 +161,4 @@ class DataRepository(context: Context, db: AppDatabase) {
         return data.toString()
     }
     //</editor-fold>
-
-    companion object {
-        @Volatile
-        private var INSTANCE: DataRepository? = null
-
-        fun getInstance(context: Context, db: AppDatabase): DataRepository {
-            return INSTANCE ?: synchronized(this) {
-                val instance = DataRepository(context, db)
-                INSTANCE = instance
-                instance
-            }
-        }
-
-        private fun getActualFilename(chartId: String) = "$chartId/$CHART_DATA_FILENAME$FILE_EXTENSION_CSV"
-    }
 }

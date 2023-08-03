@@ -9,20 +9,20 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.TableRow
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.databinding.ActivityMainBinding
 import com.husiev.universalcharts.db.entity.ChartsEntity
-import com.husiev.universalcharts.utils.INTENT_CHART_ID
-import com.husiev.universalcharts.utils.SelectionTableRowChartInfo
-import com.husiev.universalcharts.utils.logDebugOut
+import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.SelectionRowsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var model: SelectionRowsViewModel
+    private val model: SelectionRowsViewModel by viewModels()
     private lateinit var newChartDialog: AlertDialog
     private lateinit var removeChartDialog: AlertDialog
 
@@ -32,15 +32,10 @@ class SelectionActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setViewModel()
         setWidgets()
         setNewChartDialog()
         setRemoveChartDialog()
         setObserver()
-    }
-
-    private fun setViewModel() {
-        model = ViewModelProvider(this)[SelectionRowsViewModel::class.java]
     }
 
     private fun setWidgets() {
