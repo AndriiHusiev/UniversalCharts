@@ -11,4 +11,4 @@ Around it is built this app. So, what interesting I've added here:
 
 ## Screenshots
 
-![Screenshots](docs/screenshots.png "Screenshots")
+![Screenshots](docs/Screenshots.png "Screenshots")
