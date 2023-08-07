@@ -35,7 +35,13 @@ fun SettingsScreen(
                 canNavigateBack = true,
                 modifier = modifier,
                 onClose = onClose,
-                tabTitles = listOf("Chart 1", "Chart 2", "Chart 3", "Chart 4", "Chart 5"),
+                tabTitles = listOf(
+                    stringResource(R.string.header_text_tab1),
+                    stringResource(R.string.header_text_tab2),
+                    stringResource(R.string.header_text_tab3),
+                    stringResource(R.string.header_text_tab4),
+                    stringResource(R.string.header_text_tab5),
+                ),
                 tabSelected = curTab,
                 onTabSelected = { curTab = it }
             )
