@@ -21,7 +21,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,7 +42,7 @@ fun SliderItem(
 ) {
     val minValue = 1f
     val maxValue = 10f
-    var sliderPosition by remember { mutableStateOf(value.toFloat()) }
+    var sliderPosition by remember { mutableFloatStateOf(value.toFloat()) }
 
     Row(
         modifier = modifier

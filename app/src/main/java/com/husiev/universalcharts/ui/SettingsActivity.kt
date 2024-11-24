@@ -8,8 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.husiev.universalcharts.ui.composables.SettingsScreen
+import com.husiev.universalcharts.ui.theme.UniversalChartsTheme
 import com.husiev.universalcharts.utils.INTENT_CHART_ID
 import com.husiev.universalcharts.viewmodels.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +25,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(
             ComposeView(this).apply {
                 setContent {
-                    MdcTheme {
+                    UniversalChartsTheme {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background,

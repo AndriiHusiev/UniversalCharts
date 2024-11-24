@@ -30,8 +30,3 @@ data class SettingsEntity (
     @ColumnInfo(name = "width")
     val lineWidth: Int,
 )
-
-data class SettingsKey(
-    @ColumnInfo(name = "uid") val uid: Int,
-    @ColumnInfo(name = "chart_uid") val chartUid: String
-)

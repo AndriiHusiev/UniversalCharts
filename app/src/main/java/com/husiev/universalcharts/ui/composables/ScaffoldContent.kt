@@ -5,23 +5,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timeline
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Timeline
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +35,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.husiev.universalcharts.R
 import com.husiev.universalcharts.db.entity.ColorsEntity
 import com.husiev.universalcharts.db.entity.SettingsEntity
+import com.husiev.universalcharts.ui.theme.UniversalChartsTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsTopAppBar(
     title: String,
@@ -60,13 +63,16 @@ fun SettingsTopAppBar(
                 if (canNavigateBack) {
                     IconButton(onClick = onClose) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
-            }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
         )
 
         tabTitles?.let {
@@ -147,7 +153,7 @@ fun SettingsBody(
             SwitchableItem(
                 text = stringResource(R.string.settings_curved_text),
                 checked = content.curved,
-                icon = Icons.Filled.TrendingUp,
+                icon = Icons.AutoMirrored.Filled.TrendingUp,
                 onSwitch = { onChange(it, "curved") }
             )
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_medium)))
@@ -174,7 +180,7 @@ fun SettingsBody(
 @Preview(showBackground = true)
 @Composable
 fun SettingsAppBarPreview() {
-    MdcTheme {
+    UniversalChartsTheme {
         SettingsTopAppBar(
             title = "Settings",
             canNavigateBack = true,
@@ -186,7 +192,7 @@ fun SettingsAppBarPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
-    MdcTheme {
+    UniversalChartsTheme {
         SettingsBody(
             SettingsEntity(
                 chartUid = "",

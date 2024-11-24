@@ -1,30 +1,27 @@
 package com.husiev.universalcharts.ui.composables
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.husiev.universalcharts.R
-import com.husiev.universalcharts.utils.*
 import com.husiev.universalcharts.viewmodels.SettingsViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel,
     onClose: () -> Unit = {}
 ) {
-    var curTab by rememberSaveable { mutableStateOf(0) }
+    var curTab by rememberSaveable { mutableIntStateOf(0) }
     val curChartSettings by settingsViewModel.getSettings().observeAsState()
     val colors by settingsViewModel.allColors.observeAsState()
 
@@ -50,15 +47,15 @@ fun SettingsScreen(
         curChartSettings?.run {
             AnimatedContent(
                 targetState = curTab, label = "AnimTabContent",
-            ) {
+            ) { it ->
                 SettingsBody(
-                    content = this@run[curTab],
+                    content = this@run[it],
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxWidth(),
                     listColors = colors
                 ) { value, tag ->
-                    this@run[curTab]?.let {
+                    this@run[it]?.let {
                         when (tag) {
                             "label" -> settingsViewModel.updateField(it.uid, label = value as String)
                             "visible" -> settingsViewModel.updateField(it.uid, isVisible = value as Boolean)

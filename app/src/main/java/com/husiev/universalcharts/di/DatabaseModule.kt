@@ -73,14 +73,14 @@ object DatabaseModule {
     fun provideColorsDao(database: AppDatabase) = database.colorsDao()
 
     private val MIGRATION_1_2 = object : Migration(1, 2) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `settings` (" +
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `settings` (" +
                     "`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                     "`chart_uid` TEXT NOT NULL, `label` TEXT NOT NULL, `visible` INTEGER NOT NULL, " +
                     "`dots` INTEGER NOT NULL, `curved` INTEGER NOT NULL, `color` INTEGER NOT NULL, " +
                     "`width` INTEGER NOT NULL, FOREIGN KEY(`chart_uid`) REFERENCES `charts`(`uid`) " +
                     "ON UPDATE NO ACTION ON DELETE CASCADE )")
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_settings_chart_uid` ON `settings` (`chart_uid`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_settings_chart_uid` ON `settings` (`chart_uid`)")
         }
     }
 }
